@@ -1,0 +1,7 @@
+@PizzaOrders_HostAddress = http://localhost:5062
+
+POST {{PizzaOrders_HostAddress}}/api/Pizza
+Accept: application/json
+
+
+###
