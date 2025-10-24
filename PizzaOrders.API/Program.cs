@@ -1,20 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using PizzaOrders.API.Handlers;
-using PizzaOrders.Application.Interfaces;
-using PizzaOrders.Application.Services;
+using PizzaOrders.Application.Extensions;
 using PizzaOrders.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
 
-builder.Services.AddScoped<IOrderService, OrderService>();
-
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddOpenApi();
+
+builder.Services.AddApplicationServices();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

@@ -9,7 +9,7 @@ namespace PizzaOrders.Application.Services;
 
 public class OrderService(AppDbContext dbContext) : IOrderService
 {
-    public async Task<OrderDto> CreateOrder(CreateOrderDto dto)
+    public async Task<OrderObject> CreateOrder(CreateOrderDto dto)
     {
         var user = await GetUser(dto.UserId);
 
@@ -49,7 +49,7 @@ public class OrderService(AppDbContext dbContext) : IOrderService
         return orderModel.ToOrderDto();
     }
 
-    public async Task<List<OrderDto>> GetOrders()
+    public async Task<List<OrderObject>> GetOrders()
     {
         var ordersModels = await dbContext.Orders.ToListAsync();
 

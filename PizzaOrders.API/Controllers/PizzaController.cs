@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using PizzaOrders.Application.DTOs;
-using PizzaOrders.Application.Mappers;
-using PizzaOrders.Infrastructure.Data;
+using PizzaOrders.Application.Interfaces;
 
 namespace PizzaOrders.API.Controllers;
 
@@ -11,49 +8,25 @@ namespace PizzaOrders.API.Controllers;
 [Route("api/[controller]")]
 public class PizzaController : ControllerBase
 {
-    private readonly AppDbContext context;
-    private readonly ILogger<PizzaController> logger;
+    private readonly IPizzaService _pizzaService;
 
-    public PizzaController(AppDbContext context, ILogger<PizzaController> logger)
+    public PizzaController(IPizzaService pizzaService)
     {
-        this.context = context;
-        this.logger = logger;
+        _pizzaService = pizzaService;
     }
     
     [HttpGet]
     public async Task<ActionResult<IEnumerable<PizzaDto>>> GetPizzas()
     {
-
-        var pizzas = await context.Pizzas.ToListAsync();
-
-        var pizzaDto = pizzas.Select(x => new PizzaDto
-        {
-            Id = x.Id,
-            Name = x.Name,
-            Description = x.Description,
-            Price = x.Price,
-        });
+        var pizzasDto = await _pizzaService.GetPizzasList();
         
-        return Ok(pizzaDto);
+        return Ok(pizzasDto);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<PizzaDto>> GetPizza(int id)
     {
-
-        logger.LogInformation("LOG: Getting pizza for {id}", id);
-        var pizza = await context.Pizzas.FirstOrDefaultAsync(x => x.Id == id);
-
-        if (pizza != null)
-        {
-            return Ok(new PizzaDto
-            {
-                Id = pizza.Id,
-                Name = pizza.Name,
-                Description = pizza.Description,
-                Price = pizza.Price,
-            });
-        }
+        var pizza = await _pizzaService.GetSinglePizza(id);
 
         return NotFound();
     }
@@ -61,55 +34,16 @@ public class PizzaController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<PizzaDto>> AddPizza([FromBody] PizzaDto pizzaDto)
     {
-        var model = pizzaDto.ToPizzaModel(); 
-        await context.Pizzas.AddAsync(model); 
-        await context.SaveChangesAsync(); 
-        return CreatedAtAction(nameof(GetPizza), new { id =  model.Id }, model.ToPizzaDto());
+        var newPizza = await _pizzaService.AddPizza(pizzaDto);
+        
+        return Ok(newPizza);
     }
 
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeletePizza(int id)
     {
-        var pizza = await context.Pizzas.FirstOrDefaultAsync(x => x.Id == id);
-
-        if (pizza == null)
-        {
-            return NotFound();
-        }
-        
-        context.Remove(pizza);
-        await context.SaveChangesAsync();
+        await _pizzaService.DeletePizza(id);
         
         return NoContent();
-    }
-    
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> PatchPizza(int id, [FromBody] JsonPatchDocument<PizzaPatchDto>? patchDto)
-    {
-        if (patchDto == null) return BadRequest();
-        
-        var pizza = await context.Pizzas.SingleOrDefaultAsync(x => x.Id == id);
-        
-        if (pizza == null)
-        {
-            return NotFound();  
-        }
-                
-        var pizzaDto = pizza.ToPizzaPatchDto();
-            
-        patchDto.ApplyTo(pizzaDto, ModelState);
-            
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
-        if (pizzaDto.Name != null) pizza.Name = pizzaDto.Name;
-        if (pizzaDto.Description != null) pizza.Description = pizzaDto.Description;
-        if (pizzaDto.Price != null) pizza.Price = (decimal)pizzaDto.Price;
-            
-        await context.SaveChangesAsync();
-            
-        return new OkObjectResult(pizza.ToPizzaPatchDto());
     }
 }

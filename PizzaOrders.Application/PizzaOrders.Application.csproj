@@ -11,4 +11,9 @@
         <ProjectReference Include="..\PizzaOrders.Infrastructure\PizzaOrders.Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.10" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
+    </ItemGroup>
+
 </Project>

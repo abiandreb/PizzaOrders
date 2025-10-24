@@ -6,6 +6,6 @@ namespace PizzaOrders.Application.Interfaces;
 
 public interface IOrderService
 {
-    Task<OrderDto> CreateOrder(CreateOrderDto dto);
-    Task<List<OrderDto>> GetOrders();
+    Task<OrderObject> CreateOrder(CreateOrderDto dto);
+    Task<List<OrderObject>> GetOrders();
 }

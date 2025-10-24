@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace PizzaOrders.Application.DTOs;
 
-public class OrderDto
+public class OrderObject
 {
     public int? Id { get; set; }
     public string? Status { get; set; }

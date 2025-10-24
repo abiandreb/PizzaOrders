@@ -6,9 +6,9 @@ namespace PizzaOrders.Application.Mappers;
 
 public static class OrderMappings
 {
-    public static OrderDto ToOrderDto(this Order model)
+    public static OrderObject ToOrderDto(this Order model)
     {
-        return new OrderDto
+        return new OrderObject
         {
             Id = model.Id,
             Status = model.Status,

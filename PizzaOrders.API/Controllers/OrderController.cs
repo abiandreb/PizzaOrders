@@ -16,7 +16,7 @@ public class OrderController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<ActionResult<OrderDto>> CreateOrder([FromBody] CreateOrderDto? dto)
+    public async Task<ActionResult<OrderObject>> CreateOrder([FromBody] CreateOrderDto? dto)
     {
         ArgumentNullException.ThrowIfNull(dto);
         
@@ -26,7 +26,7 @@ public class OrderController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<OrderDto>>> GetOrders()
+    public async Task<ActionResult<IEnumerable<OrderObject>>> GetOrders()
     {
         var result = await orderService.GetOrders();
         

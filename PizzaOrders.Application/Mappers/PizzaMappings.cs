@@ -5,7 +5,7 @@ namespace PizzaOrders.Application.Mappers;
 
 public static class PizzaMappings
 {
-    public static Pizza ToPizzaModel(this PizzaDto dto)
+    public static Pizza ToPizzaEntity(this PizzaDto dto)
     {
         return new Pizza
         {
@@ -20,16 +20,6 @@ public static class PizzaMappings
         return new PizzaDto
         {
             Id = model.Id,
-            Name = model.Name,
-            Description = model.Description,
-            Price = model.Price
-        };
-    }
-
-    public static PizzaPatchDto ToPizzaPatchDto(this Pizza model)
-    {
-        return new PizzaPatchDto
-        {
             Name = model.Name,
             Description = model.Description,
             Price = model.Price
