@@ -1,9 +1,11 @@
-﻿namespace PizzaOrders.Application.DTOs;
+﻿using System.Collections.Generic;
+
+namespace PizzaOrders.Application.DTOs;
 
 public class CreateOrderDto
 {
     public int UserId { get; set; }
-    public List<CreateOrderItemDto> Items { get; set; } = new List<CreateOrderItemDto>();
+    public List<CreateOrderItemDto> Items { get; set; } = new();
 }
 
 public class CreateOrderItemDto

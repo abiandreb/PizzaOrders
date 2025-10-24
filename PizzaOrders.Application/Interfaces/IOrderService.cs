@@ -1,4 +1,6 @@
-﻿using PizzaOrders.Application.DTOs;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using PizzaOrders.Application.DTOs;
 
 namespace PizzaOrders.Application.Interfaces;
 

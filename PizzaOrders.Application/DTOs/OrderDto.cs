@@ -1,4 +1,7 @@
-﻿namespace PizzaOrders.Application.DTOs;
+﻿using System;
+using System.Collections.Generic;
+
+namespace PizzaOrders.Application.DTOs;
 
 public class OrderDto
 {

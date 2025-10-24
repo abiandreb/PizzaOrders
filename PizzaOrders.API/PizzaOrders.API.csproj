@@ -11,12 +11,15 @@
       <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="9.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="9.0.9" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.9" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.9" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.10">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PizzaOrders.Application\PizzaOrders.Application.csproj" />
-      <ProjectReference Include="..\PizzaOrders.Domain\PizzaOrders.Domain.csproj" />
+      <ProjectReference Include="..\PizzaOrders.Infrastructure\PizzaOrders.Infrastructure.csproj" />
     </ItemGroup>
+
 </Project>

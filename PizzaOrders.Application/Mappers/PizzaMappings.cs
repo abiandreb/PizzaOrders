@@ -11,22 +11,28 @@ public static class PizzaMappings
         {
             Name = dto.Name,
             Description = dto.Description,
-            Price = dto.Price,
+            Price = dto.Price
         };
     }
-    
-    public static PizzaDto ToPizzaDto(this Pizza model) => new PizzaDto()
-    {
-        Id = model.Id,
-        Name = model.Name,
-        Description = model.Description,
-        Price = model.Price
-    };
 
-    public static PizzaPatchDto ToPizzaPatchDto(this Pizza model) => new PizzaPatchDto()
+    public static PizzaDto ToPizzaDto(this Pizza model)
     {
-        Name = model.Name,
-        Description = model.Description,
-        Price = model.Price
-    };
+        return new PizzaDto
+        {
+            Id = model.Id,
+            Name = model.Name,
+            Description = model.Description,
+            Price = model.Price
+        };
+    }
+
+    public static PizzaPatchDto ToPizzaPatchDto(this Pizza model)
+    {
+        return new PizzaPatchDto
+        {
+            Name = model.Name,
+            Description = model.Description,
+            Price = model.Price
+        };
+    }
 }

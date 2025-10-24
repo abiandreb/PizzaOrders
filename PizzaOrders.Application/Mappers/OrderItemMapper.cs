@@ -5,20 +5,26 @@ namespace PizzaOrders.Application.Mappers;
 
 public static class OrderItemMapper
 {
-    public static OrderItemDto ToOrderItemDto(this OrderItem model) => new OrderItemDto
+    public static OrderItemDto ToOrderItemDto(this OrderItem model)
     {
-        Id = model.Id,
-        OrderId = model.OrderId,
-        PizzaId = model.PizzaId,
-        Quantity = model.Quantity,
-        ItemPrice = model.ItemPrice
-    };
+        return new OrderItemDto
+        {
+            Id = model.Id,
+            OrderId = model.OrderId,
+            PizzaId = model.PizzaId,
+            Quantity = model.Quantity,
+            ItemPrice = model.ItemPrice
+        };
+    }
 
-    public static OrderItem ToOrderItemModel(this OrderItemDto dto) => new OrderItem
+    public static OrderItem ToOrderItemModel(this OrderItemDto dto)
     {
-        OrderId = dto.OrderId.Value,
-        PizzaId = dto.PizzaId.Value,
-        Quantity = dto.Quantity.Value,
-        ItemPrice = dto.ItemPrice.Value
-    };
+        return new OrderItem
+        {
+            OrderId = dto.OrderId.Value,
+            PizzaId = dto.PizzaId.Value,
+            Quantity = dto.Quantity.Value,
+            ItemPrice = dto.ItemPrice.Value
+        };
+    }
 }
