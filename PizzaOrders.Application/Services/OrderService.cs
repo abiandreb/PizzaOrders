@@ -67,9 +67,9 @@ public class OrderService(AppDbContext dbContext) : IOrderService
             : pizzas.ToList();
     }
 
-    private async Task<User> GetUser(int userId)
+    private async Task<ApplicationUser> GetUser(string userId)
     {
-        var userModel = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == userId);
+        var userModel = await dbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.Id.Equals(userId));
 
         return userModel ?? throw new InvalidOperationException("User not found");
     }

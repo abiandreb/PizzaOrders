@@ -4,7 +4,7 @@ namespace PizzaOrders.Application.DTOs;
 
 public class CreateOrderDto
 {
-    public int UserId { get; set; }
+    public string? UserId { get; set; }
     public List<CreateOrderItemDto> Items { get; set; } = new();
 }
 
