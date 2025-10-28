@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 
@@ -6,6 +7,7 @@ namespace PizzaOrders.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService orderService;

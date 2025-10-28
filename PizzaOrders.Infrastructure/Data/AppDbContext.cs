@@ -11,6 +11,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<ApplicationUser> ApplicationUsers { get; set; }
     
     public AppDbContext(DbContextOptions<AppDbContext> options)
@@ -55,6 +56,11 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             .WithOne(x => x.ApplicationUser)
             .HasForeignKey(x => x.UserId);
 
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.RefreshTokens)
+            .HasForeignKey(x => x.UserId);
+        
         modelBuilder.Entity<ApplicationUser>().HasData(
             new ApplicationUser
             {

@@ -8,4 +8,5 @@ public class ApplicationUser : IdentityUser
     [MaxLength(256)]
     public string? Address { get; set; }
     public ICollection<Order>? Orders { get; set; } = new List<Order>();
+    public ICollection<RefreshToken>? RefreshTokens { get; set; } = new List<RefreshToken>();
 }
