@@ -7,6 +7,7 @@ using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
 using PizzaOrders.Domain.Entities;
 using PizzaOrders.Infrastructure.Data;
+using PizzaOrders.Infrastructure.Helpers;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,6 +64,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
+
+AppDbInit.SeedUserRoles(app).Wait();
 
 if (app.Environment.IsDevelopment())
 {

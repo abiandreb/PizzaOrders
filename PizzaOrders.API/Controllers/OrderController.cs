@@ -2,12 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
+using PizzaOrders.Domain;
+using PizzaOrders.Domain.Entities;
 
 namespace PizzaOrders.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize]
+[Authorize(Roles = UserRolesConstants.UserRole)]
 public class OrderController : ControllerBase
 {
     private readonly IOrderService orderService;

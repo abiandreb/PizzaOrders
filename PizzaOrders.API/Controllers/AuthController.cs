@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.Application.DTOs;
+using PizzaOrders.Domain;
 using PizzaOrders.Domain.Entities;
 using PizzaOrders.Infrastructure.Data;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -47,6 +48,8 @@ public class AuthController(
             return BadRequest(result.Errors);
         }
         
+        await userManager.AddToRoleAsync(user, UserRolesConstants.UserRole);
+        
         return Created(nameof(Register), user);
     }
 
@@ -84,41 +87,57 @@ public class AuthController(
 
     private async Task<AuthResponse?> VerifyAndGenerateTokenAsync(RefreshTokenRequest payload)
     {
-        var jwtTokenHandler = new JwtSecurityTokenHandler();
-
-        var tokenVerification = jwtTokenHandler.ValidateToken(payload.Token, _tokenValidationParameters, out var validatedToken);
-
-        if (validatedToken is JwtSecurityToken jwtSecurityToken)
+        try
         {
-            var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
-                StringComparison.InvariantCultureIgnoreCase);
+            var jwtTokenHandler = new JwtSecurityTokenHandler();
 
-            if (!result) return null;
+            var tokenVerification =
+                jwtTokenHandler.ValidateToken(payload.Token, _tokenValidationParameters, out var validatedToken);
+
+            if (validatedToken is JwtSecurityToken jwtSecurityToken)
+            {
+                var result = jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256,
+                    StringComparison.InvariantCultureIgnoreCase);
+
+                if (!result) return null;
+            }
+
+            var utcExpiryDate =
+                long.Parse(tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
+            var expiryDate = DateTime.UnixEpoch.AddMilliseconds(utcExpiryDate);
+
+            if (expiryDate > DateTime.UtcNow)
+                throw new Exception("Token is not expired");
+
+            var dbRefreshToken = context.RefreshTokens.FirstOrDefault(x => x.Token == payload.RefreshToken);
+            if (dbRefreshToken is null) return null;
+
+            if (dbRefreshToken.IsRevoked) return null;
+
+            var jti = tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
+
+            if (dbRefreshToken.JwtId != jti) return null;
+
+            if (dbRefreshToken.ExpiryDate < DateTime.UtcNow) throw new Exception("Token is expired");
+
+            var user = await userManager.FindByIdAsync(dbRefreshToken.UserId);
+            if (user is null) return null;
+
+            var token = await GenerateJwtToken(user, dbRefreshToken.Token);
+
+            return token;
         }
-        
-        var utcExpiryDate = long.Parse(tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-        var expiryDate = DateTime.UnixEpoch.AddMilliseconds(utcExpiryDate);
-        
-        if (expiryDate > DateTime.UtcNow)
-            throw new Exception("Token is not expired");
-        
-        var dbRefreshToken = context.RefreshTokens.FirstOrDefault(x => x.Token == payload.RefreshToken);
-        if (dbRefreshToken is null) return null;
-        
-        if (dbRefreshToken.IsRevoked) return null;
-        
-        var jti = tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Jti).Value;
-        
-        if (dbRefreshToken.JwtId != jti) return null;
-        
-        if (dbRefreshToken.ExpiryDate < DateTime.UtcNow) throw new Exception("Token is expired");
-        
-        var user = await userManager.FindByIdAsync(dbRefreshToken.UserId);
-        if (user is null) return null;
-        
-        var token = await GenerateJwtToken(user, dbRefreshToken.Token);
-        
-        return token;
+        catch (SecurityTokenExpiredException e)
+        {
+            var dbRefreshToken = context.RefreshTokens.FirstOrDefault(x => x.Token == payload.RefreshToken);
+
+            var user = await userManager.FindByIdAsync(dbRefreshToken?.UserId);
+            if (user is null) return null;
+
+            var token = await GenerateJwtToken(user, dbRefreshToken.Token);
+
+            return token;
+        }
     }
     
     private async Task<AuthResponse> GenerateJwtToken(ApplicationUser user, string? existingRefreshToken)
@@ -131,6 +150,10 @@ public class AuthController(
             new(JwtRegisteredClaimNames.Sub, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        var roles = userManager.GetRolesAsync(user);
+
+        claims.AddRange(roles.Result.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var authSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(configuration["JWT:Secret"]));
 
