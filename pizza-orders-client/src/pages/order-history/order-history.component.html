@@ -1,0 +1,39 @@
+<div class="bg-white p-8 rounded-lg shadow-md">
+  <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">My Order History</h1>
+
+  @if (sortedOrders().length > 0) {
+    <div class="space-y-6">
+      @for (order of sortedOrders(); track order.id) {
+        <div class="border rounded-lg p-6 bg-gray-50">
+          <div class="flex flex-wrap justify-between items-center gap-4">
+            <div>
+              <p class="text-lg font-bold text-gray-800">Order #{{ order.id }}</p>
+              <p class="text-sm text-gray-500">Placed on: {{ order.date | date:'medium' }}</p>
+            </div>
+            <div>
+              <span [class]="getStatusClass(order.status)" class="text-sm font-medium mr-2 px-2.5 py-0.5 rounded">
+                {{ order.status }}
+              </span>
+            </div>
+            <div class="text-lg font-bold text-gray-800">
+              Total: ${{ order.total.toFixed(2) }}
+            </div>
+          </div>
+          <div class="border-t mt-4 pt-4">
+            <h4 class="font-semibold mb-2">Items:</h4>
+            <ul class="list-disc list-inside text-gray-700">
+              @for (item of order.items; track item.product.id) {
+                <li>{{ item.quantity }} x {{ item.product.name }}</li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="text-center py-12">
+      <h3 class="mt-2 text-xl font-medium text-gray-900">No orders yet</h3>
+      <p class="mt-1 text-sm text-gray-500">You haven't placed any orders with us. Let's change that!</p>
+    </div>
+  }
+</div>

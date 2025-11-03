@@ -1,0 +1,70 @@
+<div class="bg-white">
+  <!-- Hero Section -->
+  <section class="relative">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-12 md:py-24">
+            <div class="text-center md:text-left">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-gray-900 tracking-tight">
+                    <span class="block">The Best Pizza</span>
+                    <span class="block text-orange-600">Delivered to Your Door.</span>
+                </h1>
+                <p class="mt-4 text-lg text-gray-600">
+                    Hand-crafted with the freshest ingredients. Ready to order?
+                </p>
+                <div class="mt-8 flex justify-center md:justify-start gap-4">
+                    <a routerLink="/menu" class="inline-block bg-orange-600 text-white font-bold py-3 px-8 rounded-md hover:bg-orange-700 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                        Order Now
+                    </a>
+                    <a routerLink="/build-your-own" class="inline-block bg-gray-200 text-gray-800 font-bold py-3 px-8 rounded-md hover:bg-gray-300 transition-transform duration-300 ease-in-out transform hover:-translate-y-1">
+                        Build Your Own
+                    </a>
+                </div>
+            </div>
+            <div class="flex justify-center">
+                <img src="https://picsum.photos/id/1080/500/500" alt="Delicious Pizza" class="rounded-full shadow-2xl">
+            </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="py-16 bg-gray-50">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 class="text-3xl font-bold mb-2">How It Works</h2>
+          <p class="text-gray-600 mb-12">Get your favorite pizza in 3 easy steps.</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+              <div class="flex flex-col items-center">
+                  <div class="bg-orange-500 text-white rounded-full h-20 w-20 flex items-center justify-center text-3xl font-bold mb-4">1</div>
+                  <h3 class="text-xl font-semibold mb-2">Choose Your Pizza</h3>
+                  <p class="text-gray-600">Browse our menu or create your own custom pizza.</p>
+              </div>
+              <div class="flex flex-col items-center">
+                  <div class="bg-orange-500 text-white rounded-full h-20 w-20 flex items-center justify-center text-3xl font-bold mb-4">2</div>
+                  <h3 class="text-xl font-semibold mb-2">Place Your Order</h3>
+                  <p class="text-gray-600">Checkout securely with our easy-to-use system.</p>
+              </div>
+              <div class="flex flex-col items-center">
+                  <div class="bg-orange-500 text-white rounded-full h-20 w-20 flex items-center justify-center text-3xl font-bold mb-4">3</div>
+                  <h3 class="text-xl font-semibold mb-2">Enjoy!</h3>
+                  <p class="text-gray-600">We'll deliver your hot and fresh pizza right to you.</p>
+              </div>
+          </div>
+      </div>
+  </section>
+
+  <!-- Top Pizzas Section -->
+  <section class="py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl font-bold text-center mb-12">Our Most Popular Pizzas</h2>
+      @if (topPizzas().length > 0) {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          @for (pizza of topPizzas(); track pizza.id) {
+            <app-pizza-card [pizza]="pizza" />
+          }
+        </div>
+      } @else {
+        <p class="text-center text-gray-500">Loading our top pizzas...</p>
+      }
+    </div>
+  </section>
+</div>

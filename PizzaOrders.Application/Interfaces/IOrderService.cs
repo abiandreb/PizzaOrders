@@ -8,4 +8,6 @@ public interface IOrderService
 {
     Task<OrderObject> CreateOrder(CreateOrderDto dto);
     Task<List<OrderObject>> GetOrders();
+    Task<List<OrderObject>> GetOrdersByUserId(string userId);
+    Task UpdateOrderStatus(string orderId, string status);
 }

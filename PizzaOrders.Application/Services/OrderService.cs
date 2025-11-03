@@ -56,6 +56,19 @@ public class OrderService(AppDbContext dbContext) : IOrderService
         return ordersModels.Select(x => x.ToOrderDto()).ToList();
     }
 
+    public async Task<List<OrderObject>> GetOrdersByUserId(string userId)
+    {
+        // TODO: Implement fetching orders by user ID
+        await Task.CompletedTask;
+        return new List<OrderObject>();
+    }
+
+    public async Task UpdateOrderStatus(string orderId, string status)
+    {
+        // TODO: Implement updating order status
+        await Task.CompletedTask;
+    }
+
     private async Task<List<Pizza>> GetPizzas(CreateOrderDto dto)
     {
         var pizzaIds = dto.Items.Select(x => x.PizzaId);

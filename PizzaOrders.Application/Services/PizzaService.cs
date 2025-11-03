@@ -31,7 +31,7 @@ public class PizzaService : IPizzaService
             Price = x.Price,
         }).ToList();
 
-        return pizzasDto.IsNullOrEmpty() ? throw new InvalidOperationException("No pizzas found") : pizzasDto;
+        return !pizzasDto.Any() ? throw new InvalidOperationException("No pizzas found") : pizzasDto;
     }
 
     public async Task<PizzaDto> GetSinglePizza(int id)

@@ -1,0 +1,77 @@
+<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+  <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Your Shopping Cart</h1>
+
+  @if (cartService.cartItems().length > 0) {
+    <div class="flow-root">
+      <ul role="list" class="-my-6 divide-y divide-gray-200">
+        @for (item of cartService.cartItems(); track item.product.id) {
+          <li class="flex py-6">
+            <div class="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
+              <img [src]="item.product.imageUrl || 'https://picsum.photos/200/200'" [alt]="item.product.name" class="h-full w-full object-cover object-center">
+            </div>
+
+            <div class="ml-4 flex flex-1 flex-col">
+              <div>
+                <div class="flex justify-between text-base font-medium text-gray-900">
+                  <h3>{{ item.product.name }}</h3>
+                  <p class="ml-4">{{ item.product.price * item.quantity | currency }}</p>
+                </div>
+              </div>
+              <div class="flex flex-1 items-end justify-between text-sm">
+                 <div class="flex items-center">
+                    <label [for]="'quantity-' + item.product.id" class="mr-2 text-gray-500">Qty</label>
+                    <input [id]="'quantity-' + item.product.id" type="number" [value]="item.quantity" (change)="updateQuantity(item.product.id, $event)" min="1" class="w-16 rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 sm:text-sm bg-white text-gray-900">
+                 </div>
+                <div class="flex">
+                  <button (click)="removeItem(item.product.id)" type="button" class="font-medium text-orange-600 hover:text-orange-500">Remove</button>
+                </div>
+              </div>
+            </div>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <!-- Order summary -->
+    <div class="border-t border-gray-200 mt-8 pt-6">
+        <div class="flex justify-between text-base font-medium text-gray-900">
+            <p>Subtotal</p>
+            <p>{{ cartService.subtotal() | currency }}</p>
+        </div>
+        <div class="flex justify-between text-base font-medium text-gray-500 mt-2">
+            <p>Tax (8%)</p>
+            <p>{{ cartService.tax() | currency }}</p>
+        </div>
+        <div class="flex justify-between text-lg font-bold text-gray-900 mt-2">
+            <p>Order total</p>
+            <p>{{ cartService.total() | currency }}</p>
+        </div>
+        <div class="mt-6">
+            <a routerLink="/checkout" class="flex items-center justify-center rounded-md border border-transparent bg-orange-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-orange-700">Checkout</a>
+        </div>
+        <div class="mt-6 flex justify-center text-center text-sm text-gray-500">
+            <p>
+                or
+                <a routerLink="/menu" class="font-medium text-orange-600 hover:text-orange-500">
+                    Continue Shopping
+                    <span aria-hidden="true"> &rarr;</span>
+                </a>
+            </p>
+        </div>
+    </div>
+
+  } @else {
+    <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c.51 0 .962-.328 1.093-.828l2.91-6.616c.203-.461-.133-1.002-.642-1.002H5.316" />
+        </svg>
+        <h3 class="mt-2 text-xl font-medium text-gray-900">Your cart is empty</h3>
+        <p class="mt-1 text-sm text-gray-500">Looks like you haven't added anything to your cart yet.</p>
+        <div class="mt-6">
+            <a routerLink="/menu" class="inline-flex items-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2">
+                Browse Menu
+            </a>
+        </div>
+    </div>
+  }
+</div>

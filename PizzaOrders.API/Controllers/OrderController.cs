@@ -36,4 +36,20 @@ public class OrderController : ControllerBase
         
         return Ok(result);
     }
+
+    [HttpGet("user/{userId}")]
+    public async Task<ActionResult<IEnumerable<OrderObject>>> GetOrdersByUserId(string userId)
+    {
+        // TODO: Implement service method
+        await Task.CompletedTask;
+        return Ok(new List<OrderObject>());
+    }
+
+    [HttpPut("{orderId}")]
+    public async Task<ActionResult> UpdateOrderStatus(string orderId, [FromBody] string status)
+    {
+        // TODO: Implement service method
+        await Task.CompletedTask;
+        return NoContent();
+    }
 }

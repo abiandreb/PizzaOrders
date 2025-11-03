@@ -31,7 +31,9 @@ public class PizzaController : ControllerBase
     {
         var pizza = await _pizzaService.GetSinglePizza(id);
 
-        return NotFound();
+        if (pizza is null) return NotFound();
+        
+        return Ok(pizza);
     }
 
     [HttpPost]

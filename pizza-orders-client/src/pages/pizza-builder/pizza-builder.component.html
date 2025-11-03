@@ -1,0 +1,77 @@
+<div class="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+  <h1 class="text-4xl font-extrabold text-gray-900 mb-8 text-center">Build Your Own Pizza</h1>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+    <!-- Pizza Configuration -->
+    <div>
+      <!-- Size -->
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold mb-3">1. Choose Size</h3>
+        <div class="flex flex-wrap gap-2">
+          @for (size of sizes; track size.name) {
+            <button (click)="selectedSize.set(size)"
+              [class]="'px-4 py-2 rounded-md transition-colors border ' + (selectedSize().name === size.name ? 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700' : 'bg-white text-gray-800 border-gray-300 hover:bg-orange-50 hover:border-orange-400')">
+              {{ size.name }} (+{{ size.price | currency }})
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Sauce -->
+      <div class="mb-6">
+        <h3 class="text-xl font-semibold mb-3">2. Choose Sauce</h3>
+        <div class="flex flex-wrap gap-2">
+          @for (sauce of sauces; track sauce.name) {
+            <button (click)="selectedSauce.set(sauce)"
+             [class]="'px-4 py-2 rounded-md transition-colors border ' + (selectedSauce().name === sauce.name ? 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700' : 'bg-white text-gray-800 border-gray-300 hover:bg-orange-50 hover:border-orange-400')">
+              {{ sauce.name }} (+{{ sauce.price | currency }})
+            </button>
+          }
+        </div>
+      </div>
+
+      <!-- Toppings -->
+      <div>
+        <h3 class="text-xl font-semibold mb-3">3. Add Toppings</h3>
+        <div class="grid grid-cols-2 gap-2">
+          @for (topping of toppings; track topping.name) {
+            <button (click)="toggleTopping(topping)"
+              [class]="'w-full px-4 py-2 rounded-md transition-colors border text-left ' + (isToppingSelected(topping) ? 'bg-orange-600 text-white border-orange-600 hover:bg-orange-700' : 'bg-white text-gray-800 border-gray-300 hover:bg-orange-50 hover:border-orange-400')">
+              {{ topping.name }} (+{{ topping.price | currency }})
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="bg-gray-50 p-6 rounded-lg">
+      <h2 class="text-2xl font-bold mb-4 border-b pb-2">Your Creation</h2>
+      <ul class="space-y-2 text-gray-700">
+        <li><strong>Base:</strong> {{ selectedBase().name }} ({{ selectedBase().price | currency }})</li>
+        <li><strong>Size:</strong> {{ selectedSize().name }} ({{ selectedSize().price | currency }})</li>
+        <li><strong>Sauce:</strong> {{ selectedSauce().name }} ({{ selectedSauce().price | currency }})</li>
+        <li><strong>Cheese:</strong> {{ selectedCheese().name }} ({{ selectedCheese().price | currency }})</li>
+        @if (selectedToppings().length > 0) {
+          <li>
+            <strong>Toppings:</strong>
+            <ul class="list-disc list-inside ml-4">
+              @for (topping of selectedToppings(); track topping.name) {
+                <li>{{ topping.name }} ({{ topping.price | currency }})</li>
+              }
+            </ul>
+          </li>
+        }
+      </ul>
+      <div class="mt-6 border-t pt-4">
+        <div class="flex justify-between items-center text-2xl font-bold">
+          <span>Total:</span>
+          <span>{{ totalPrice() | currency }}</span>
+        </div>
+        <button (click)="addToCart()" class="mt-6 w-full bg-orange-600 text-white px-6 py-3 rounded-md text-lg font-semibold hover:bg-orange-700 transition-colors">
+          Add to Cart
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
