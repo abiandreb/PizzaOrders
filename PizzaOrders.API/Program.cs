@@ -5,6 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
+using PizzaOrders.Application.Interfaces;
+using PizzaOrders.Application.Services;
 using PizzaOrders.Domain.Entities;
 using PizzaOrders.Infrastructure.Data;
 using PizzaOrders.Infrastructure.Helpers;
@@ -32,6 +34,14 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:4200") // Angular dev server
             .AllowAnyHeader()
             .AllowAnyMethod());
+    
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 var tokenValidationParameters = new TokenValidationParameters()
@@ -44,6 +54,8 @@ var tokenValidationParameters = new TokenValidationParameters()
     ValidAudience = builder.Configuration["JWT:Audience"],
     ValidateLifetime = true
 };
+
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddSingleton(tokenValidationParameters);
 
@@ -71,7 +83,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.UseCors("AllowAngular");
+    app.UseCors("AllowAll");
 }
 else
 {
