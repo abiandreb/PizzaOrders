@@ -8,7 +8,7 @@ namespace PizzaOrders.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[Authorize(Roles = UserRolesConstants.UserRole)]
+//[Authorize(Roles = UserRolesConstants.UserRole)]
 public class PizzaController : ControllerBase
 {
     private readonly IPizzaService _pizzaService;

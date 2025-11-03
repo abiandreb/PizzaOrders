@@ -9,14 +9,12 @@ namespace PizzaOrders.API.Controllers;
 public class AuthController(IAuthService authService)
     : ControllerBase
 {
-    private readonly IAuthService _authService = authService;
-    
     [HttpPost("register-user")]
     public async Task<IActionResult> Register([FromBody] RegisterDto payload)
     {
         try
         {
-            var result = await _authService.Register(payload);
+            var result = await authService.Register(payload);
             return Ok(result);
         }
         catch (InvalidOperationException ex)
@@ -32,7 +30,7 @@ public class AuthController(IAuthService authService)
         
         try
         {
-            var token = await _authService.Login(payload);
+            var token = await authService.Login(payload);
             return Ok(token);
         }
         catch (UnauthorizedAccessException ex)
@@ -46,7 +44,7 @@ public class AuthController(IAuthService authService)
     {
         try
         {
-            var result = await _authService.VerifyAndGenerateTokenAsync(payload);
+            var result = await authService.VerifyAndGenerateTokenAsync(payload);
             
             if (result is null) return BadRequest("Invalid tokens");
             

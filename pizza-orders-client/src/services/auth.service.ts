@@ -8,7 +8,7 @@ import { of, Observable, delay, tap, map, catchError } from 'rxjs';
 export class AuthService {
     private http = inject(HttpClient);
     private router = inject(Router);
-    private baseUrl = 'https://localhost:7034/api/Auth'; // TODO: Move to environment variable
+    private baseUrl = 'https://localhost:7258/api/Auth'; // TODO: Move to environment variable
 
     currentUser = signal<User | null>(this.loadUserFromStorage());
     
@@ -55,7 +55,9 @@ export class AuthService {
     }
     
     register(userData: Omit<User, 'id' | 'roles'>): Observable<{ success: boolean; message: string }> {
-        return this.http.post(`${this.baseUrl}/register-user`, userData).pipe(
+        const { name, email, password, address } = userData;
+        return this.http.post(`${this.baseUrl}/register-user`, { userName: name, email, password, address }).pipe(
+            tap(() => this.router.navigate(['/registration-confirmation'])),
             map(() => ({ success: true, message: 'Registration successful' })),
             catchError(error => {
                 return of({ success: false, message: error.error?.message || 'Registration failed' });

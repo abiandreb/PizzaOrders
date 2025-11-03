@@ -88,6 +88,11 @@ export const APP_ROUTES: Routes = [
         title: 'Register - Pizza Planet'
     },
     {
+        path: 'registration-confirmation',
+        loadComponent: () => import('./pages/registration-confirmation/registration-confirmation.component').then(c => c.RegistrationConfirmationComponent),
+        title: 'Registration Successful - Pizza Planet'
+    },
+    {
         path: 'admin',
         canActivate: [adminGuard],
         loadChildren: () => import('./pages/admin/admin.routes').then(r => r.ADMIN_ROUTES),
