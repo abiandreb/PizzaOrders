@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrders.Domain.Entities;
 
@@ -28,6 +29,30 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     {
         base.OnModelCreating(modelBuilder);
        
+        modelBuilder.Entity<ApplicationUser>(b => {
+            b.ToTable("Users");
+        });
+        
+        modelBuilder.Entity<IdentityUserRole<string>>(b => {
+            b.ToTable("UserRoles");
+        });
+
+        modelBuilder.Entity<IdentityUserClaim<string>>(b => {
+            b.ToTable("UserClaims");
+        });
+
+        modelBuilder.Entity<IdentityUserLogin<string>>(b => {
+            b.ToTable("UserLogins");
+        });
+
+        modelBuilder.Entity<IdentityRoleClaim<string>>(b => {
+            b.ToTable("RoleClaims");
+        });
+
+        modelBuilder.Entity<IdentityUserToken<string>>(b => {
+            b.ToTable("UserTokens");
+        });
+        
         modelBuilder.Entity<Pizza>()
             .Property(x => x.Price)
             .HasPrecision(18, 2);
