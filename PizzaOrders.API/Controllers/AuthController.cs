@@ -10,7 +10,7 @@ public class AuthController(IAuthService authService)
     : ControllerBase
 {
     [HttpPost("register-user")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto payload)
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest payload)
     {
         try
         {
@@ -59,4 +59,11 @@ public class AuthController(IAuthService authService)
             return BadRequest(ex.Message);
         }
     }
+    
+    /* TODO:
+        GET /confirmEmail
+        POST /resendConfirmationEmail
+        POST /forgotPassword
+        POST /resetPassword
+    */
 }

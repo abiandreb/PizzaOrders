@@ -2,13 +2,11 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
-using PizzaOrders.Domain;
-using PizzaOrders.Domain.Entities;
+using PizzaOrders.Domain.Entities.AuthEntities;
 using PizzaOrders.Infrastructure.Data;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -16,27 +14,24 @@ namespace PizzaOrders.Application.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<UserEntity> _userManager;
     private readonly AppDbContext _context;
     private readonly IConfiguration _configuration;
     private readonly TokenValidationParameters _tokenValidationParameters;
 
     public AuthService(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager,
+        UserManager<UserEntity> userManager,
         AppDbContext context,
         IConfiguration configuration,
         TokenValidationParameters tokenValidationParameters)
     {
         _userManager = userManager;
-        _roleManager = roleManager;
         _context = context;
         _configuration = configuration;
         _tokenValidationParameters = tokenValidationParameters;
     }
 
-    public async Task<AuthResponse> Register(RegisterDto payload)
+    public async Task<AuthResponse> Register(RegisterUserRequest payload)
     {
         var userExists = await _userManager.FindByEmailAsync(payload.Email);
 
@@ -45,11 +40,16 @@ public class AuthService : IAuthService
             throw new InvalidOperationException("User already exists");
         }
         
-        var user = new ApplicationUser
+        var user = new UserEntity
         {
+            Id = 0,
             UserName = payload.Email,
+            NormalizedUserName = null,
             Email = payload.Email,
-            SecurityStamp = Guid.NewGuid().ToString()
+            SecurityStamp = Guid.NewGuid()
+                .ToString(),
+            PhoneNumber = payload.PhoneNumber,
+            Address = payload.Address
         };
         
         var result = await _userManager.CreateAsync(user, payload.Password);
@@ -59,7 +59,7 @@ public class AuthService : IAuthService
             throw new InvalidOperationException(string.Join(", ", result.Errors.Select(e => e.Description)));
         }
         
-        await _userManager.AddToRoleAsync(user, UserRolesConstants.UserRole);
+        await _userManager.AddToRoleAsync(user, payload.Role);
         
         return await GenerateJwtToken(user, null);
     }
@@ -111,7 +111,7 @@ public class AuthService : IAuthService
 
             if (dbRefreshToken.ExpiryDate < DateTime.UtcNow) throw new InvalidOperationException("Token is expired");
 
-            var user = await _userManager.FindByIdAsync(dbRefreshToken.UserId);
+            var user = await _userManager.FindByIdAsync(dbRefreshToken.UserId.ToString());
             if (user is null) return null;
 
             var token = await GenerateJwtToken(user, dbRefreshToken.Token);
@@ -122,21 +122,21 @@ public class AuthService : IAuthService
         {
             var dbRefreshToken = _context.RefreshTokens.FirstOrDefault(x => x.Token == payload.RefreshToken);
 
-            var user = await _userManager.FindByIdAsync(dbRefreshToken?.UserId);
+            var user = await _userManager.FindByIdAsync(dbRefreshToken?.UserId.ToString() ?? string.Empty);
             if (user is null) return null;
 
-            var token = await GenerateJwtToken(user, dbRefreshToken.Token);
+            var token = await GenerateJwtToken(user, dbRefreshToken?.Token);
 
             return token;
         }
     }
     
-    private async Task<AuthResponse> GenerateJwtToken(ApplicationUser user, string? existingRefreshToken)
+    private async Task<AuthResponse> GenerateJwtToken(UserEntity user, string? existingRefreshToken)
     {
         var claims = new List<Claim>()
         {
             new(ClaimTypes.Name, user.UserName),
-            new(ClaimTypes.NameIdentifier, user.Id),
+            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Sub, user.Email),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
@@ -166,12 +166,12 @@ public class AuthService : IAuthService
                 ExpiresAt = token.ValidTo
             };
         
-        var refreshToken = new RefreshToken()
+        var refreshToken = new RefreshTokenEntity()
         {
             JwtId = token.Id,
             IsRevoked = false,
             UserId = user.Id,
-            DateCreated = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow,
             ExpiryDate = DateTime.UtcNow.AddDays(7),
             Token = Guid.NewGuid() + "-" + Guid.NewGuid()
         };

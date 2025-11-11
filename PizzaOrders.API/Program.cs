@@ -1,15 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
-using PizzaOrders.Application.Interfaces;
-using PizzaOrders.Application.Services;
-using PizzaOrders.Domain.Entities;
-using PizzaOrders.Infrastructure.Data;
-using PizzaOrders.Infrastructure.Helpers;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,16 +15,15 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddOpenApi();
 
-builder.Services.AddApplicationServices();
+builder.Services.AddAppContext(builder.Configuration);
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddApplicationServices();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngular",
         policy => policy
-            .WithOrigins("http://localhost:4200") // Angular dev server
+            .WithOrigins("http://localhost:4200")
             .AllowAnyHeader()
             .AllowAnyMethod());
     
@@ -47,7 +39,9 @@ builder.Services.AddCors(options =>
 var tokenValidationParameters = new TokenValidationParameters()
 {
     ValidateIssuerSigningKey = true,
-    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(builder.Configuration["JWT:Secret"])),
+    IssuerSigningKey = new SymmetricSecurityKey(
+        Encoding.ASCII.GetBytes(builder.Configuration["JWT:Secret"] 
+                                ?? throw new InvalidOperationException())),
     ValidateIssuer = true,
     ValidIssuer = builder.Configuration["JWT:Issuer"],
     ValidateAudience = true,
@@ -55,13 +49,7 @@ var tokenValidationParameters = new TokenValidationParameters()
     ValidateLifetime = true
 };
 
-builder.Services.AddScoped<IAuthService, AuthService>();
-
 builder.Services.AddSingleton(tokenValidationParameters);
-
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -76,8 +64,6 @@ builder.Services.AddAuthentication(options =>
 });
 
 var app = builder.Build();
-
-AppDbInit.SeedUserRoles(app).Wait();
 
 if (app.Environment.IsDevelopment())
 {
