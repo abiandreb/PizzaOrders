@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
+using PizzaOrders.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
