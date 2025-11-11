@@ -16,4 +16,9 @@
       <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.3.0" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Extensions\" />
+      <Folder Include="Mappers\" />
+    </ItemGroup>
+
 </Project>

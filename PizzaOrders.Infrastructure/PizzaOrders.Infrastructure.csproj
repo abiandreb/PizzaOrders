@@ -22,8 +22,9 @@
     
     <ItemGroup>
       <Folder Include="Configuration\" />
+      <Folder Include="Data\" />
+      <Folder Include="Helpers\" />
       <Folder Include="Migrations\" />
-      <Folder Include="Repositories\" />
     </ItemGroup>
 
     <ItemGroup>
