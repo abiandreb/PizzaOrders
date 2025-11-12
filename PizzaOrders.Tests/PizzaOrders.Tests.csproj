@@ -21,6 +21,7 @@
         <ProjectReference Include="..\PizzaOrders.Application\PizzaOrders.Application.csproj" />
         <ProjectReference Include="..\PizzaOrders.Infrastructure\PizzaOrders.Infrastructure.csproj" />
         <ProjectReference Include="..\PizzaOrders.API\PizzaOrders.API.csproj" />
+        <ProjectReference Include="..\PizzaOrders.ServiceDefaults\PizzaOrders.ServiceDefaults.csproj" />
     </ItemGroup>
 
     <ItemGroup>
