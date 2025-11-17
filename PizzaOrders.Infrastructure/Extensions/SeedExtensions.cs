@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
+using PizzaOrders.Domain;
 using PizzaOrders.Domain.Entities.AuthEntities;
+using PizzaOrders.Domain.Entities.Products;
+using PizzaOrders.Domain.Entities.Toppings; 
 using PizzaOrders.Domain.Entities.Orders;
 using PizzaOrders.Domain.Entities.Payment;
-using PizzaOrders.Domain.Entities.Products;
-using PizzaOrders.Domain.Entities.Toppings;
-using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Infrastructure.Extensions;
 
@@ -14,131 +13,282 @@ public static class SeedExtensions
 {
     public static void SeedDomainData(this ModelBuilder modelBuilder)
     {
-        var productToppings = new List<ProductToppingEntity>
-        {
-            // Margherita
-            new() { ProductId = 1, ToppingId = 1 },
-    
-            // Pepperoni
-            new() { ProductId = 2, ToppingId = 1 },
-            new() { ProductId = 2, ToppingId = 2 },
-    
-            // Hawaiian
-            new() { ProductId = 3, ToppingId = 1 },
-            new() { ProductId = 3, ToppingId = 6 },
-            new() { ProductId = 3, ToppingId = 7 },
-    
-            // Four Cheese
-            new() { ProductId = 4, ToppingId = 1 },
-            new() { ProductId = 4, ToppingId = 10 },
-    
-            // BBQ Chicken
-            new() { ProductId = 5, ToppingId = 9 },
-            new() { ProductId = 5, ToppingId = 6 },
-    
-            // Vegetarian
-            new() { ProductId = 6, ToppingId = 3 },
-            new() { ProductId = 6, ToppingId = 4 },
-            new() { ProductId = 6, ToppingId = 5 },
-            new() { ProductId = 6, ToppingId = 8 },
-    
-            // Meat Lover
-            new() { ProductId = 7, ToppingId = 2 },
-            new() { ProductId = 7, ToppingId = 6 },
-            new() { ProductId = 7, ToppingId = 9 },
-    
-            // Capricciosa
-            new() { ProductId = 8, ToppingId = 6 },
-            new() { ProductId = 8, ToppingId = 3 },
-            new() { ProductId = 8, ToppingId = 8 },
-        };
+        var adminRole = new RoleEntity { Id = 1, Name = "Admin", NormalizedName = "ADMIN" };
+        var userRole = new RoleEntity { Id = 2, Name = "User", NormalizedName = "USER" };
 
-        var products = new List<ProductEntity>
-        {
-            new() { Id = 1, Name = "Margherita", Description = "Classic tomato sauce & mozzarella", ProductType = ProductType.Pizza, BasePrice = 25.0m, HasToppings = true, ImageUrl = "/img/pizza/margherita.jpg" },
-            new() { Id = 2, Name = "Pepperoni", Description = "Spicy pepperoni & cheese", ProductType = ProductType.Pizza, BasePrice = 28.0m, HasToppings = true, ImageUrl = "/img/pizza/pepperoni.jpg" },
-            new() { Id = 3, Name = "Hawaiian", Description = "Ham, pineapple & mozzarella", ProductType = ProductType.Pizza, BasePrice = 30.0m, HasToppings = true, ImageUrl = "/img/pizza/hawaiian.jpg" },
-            new() { Id = 4, Name = "Four Cheese", Description = "Mozzarella, cheddar, blue cheese, parmesan", ProductType = ProductType.Pizza, BasePrice = 32.0m, HasToppings = true, ImageUrl = "/img/pizza/fourcheese.jpg" },
-            new() { Id = 5, Name = "BBQ Chicken", Description = "Chicken, bacon, BBQ sauce", ProductType = ProductType.Pizza, BasePrice = 33.0m, HasToppings = true, ImageUrl = "/img/pizza/bbqchicken.jpg" },
-            new() { Id = 6, Name = "Vegetarian", Description = "Mushrooms, bell peppers, onion, olives", ProductType = ProductType.Pizza, BasePrice = 27.0m, HasToppings = true, ImageUrl = "/img/pizza/vegetarian.jpg" },
-            new() { Id = 7, Name = "Meat Lover", Description = "Ham, bacon, pepperoni, BBQ sauce", ProductType = ProductType.Pizza, BasePrice = 35.0m, HasToppings = true, ImageUrl = "/img/pizza/meatlovers.jpg" },
-            new() { Id = 8, Name = "Capricciosa", Description = "Ham, mushrooms, olives, artichokes", ProductType = ProductType.Pizza, BasePrice = 31.0m, HasToppings = true, ImageUrl = "/img/pizza/capricciosa.jpg" },
-            new() { Id = 9, Name = "Coke", Description = "0.5L Coca-Cola bottle", ProductType = ProductType.Drink, BasePrice = 6.0m, HasToppings = false, ImageUrl = "/img/drinks/coke.jpg" },
-            new() { Id = 10, Name = "Pepsi", Description = "0.5L Pepsi bottle", ProductType = ProductType.Drink, BasePrice = 6.0m, HasToppings = false, ImageUrl = "/img/drinks/pepsi.jpg" },
-            new() { Id = 11, Name = "7Up", Description = "0.5L 7Up bottle", ProductType = ProductType.Drink, BasePrice = 6.0m, HasToppings = false, ImageUrl = "/img/drinks/7up.jpg" },
-            new() { Id = 12, Name = "Fries with Sauce", Description = "Crispy fries with garlic sauce", ProductType = ProductType.Starter, BasePrice = 10.0m, HasToppings = false, ImageUrl = "/img/starters/fries.jpg" },
-            new() { Id = 13, Name = "Onion Rings", Description = "Deep-fried onion rings", ProductType = ProductType.Starter, BasePrice = 9.0m, HasToppings = false, ImageUrl = "/img/starters/onionrings.jpg" }
-        };
-        
-        var toppings = new List<ToppingEntity>
-        {
-            new() { Id = 1, Name = "Mozzarella", Description = "Fresh mozzarella cheese", Price = 2.0m },
-            new() { Id = 2, Name = "Pepperoni", Description = "Spicy pepperoni slices", Price = 2.5m },
-            new() { Id = 3, Name = "Mushrooms", Description = "Fresh champignon mushrooms", Price = 1.5m },
-            new() { Id = 4, Name = "Onion", Description = "Sliced red onion", Price = 1.0m },
-            new() { Id = 5, Name = "Bell Pepper", Description = "Sweet bell peppers", Price = 1.2m },
-            new() { Id = 6, Name = "Ham", Description = "Classic ham slices", Price = 2.5m },
-            new() { Id = 7, Name = "Pineapple", Description = "Juicy pineapple chunks", Price = 1.8m },
-            new() { Id = 8, Name = "Olives", Description = "Black olives", Price = 1.5m },
-            new() { Id = 9, Name = "Bacon", Description = "Smoked crispy bacon", Price = 2.7m },
-            new() { Id = 10, Name = "Extra Cheese", Description = "Double mozzarella layer", Price = 2.0m }
-        };
+        modelBuilder.Entity<RoleEntity>().HasData(adminRole, userRole);
 
-        var order = new OrderEntity
+        var adminUser = new UserEntity
         {
             Id = 1,
-            Status = OrderStatus.Paid,
-            TotalPrice = 39.2m,
-            PaymentId = 1,
-            UserId = 1
+            UserName = "admin",
+            NormalizedUserName = "ADMIN",
+            Email = "admin@example.com",
+            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            EmailConfirmed = true,
+            PasswordHash = "AQAAAAIAAYagAAAAEJ/n/y4nL5z0mJ6/BEiXzY3T2gR8gUaZa/tG2gR8gUaZa/tG2gR8gUaZa/tG2g==",
+            SecurityStamp = "9239922b-2875-4350-a926-2184462719a4"
         };
 
-        var payment = new PaymentEntity
+        var regularUser = new UserEntity
         {
-            Id = 1,
-            OrderId = 1,
-            Amount = 39.2m,
-            Method = PaymentMethod.Online,
-            Status = PaymentStatus.Paid,
-            Gateway = "Stripe",
-            TransactionId = "txn_1J23456789ABCDEFG",
+            Id = 2,
+            UserName = "user",
+            NormalizedUserName = "USER",
+            Email = "user@example.com",
+            NormalizedEmail = "USER@EXAMPLE.COM",
+            EmailConfirmed = true,
+            PasswordHash = "AQAAAAIAAYagAAAAEJ/n/y4nL5z0mJ6/BEiXzY3T2gR8gUaZa/tG2gR8gUaZa/tG2gR8gUaZa/tG2g==",
+            SecurityStamp = "e178d197-36e7-4935-a744-83a3162b77a7"
         };
+
+        modelBuilder.Entity<UserEntity>().HasData(adminUser, regularUser);
+
+        modelBuilder.Entity<UserRoleEntity>().HasData(
+            new UserRoleEntity { UserId = 1, RoleId = 1 },
+            new UserRoleEntity { UserId = 2, RoleId = 2 }
+        );
         
-        var orderItems = new List<OrderItemEntity>
-        {
-            new()
+        // Toppings
+        modelBuilder.Entity<ToppingEntity>().HasData(
+            new ToppingEntity { Id = 1, Name = "Pepperoni", Description = "Spicy sausage slices", Stock = 100, Price = 1.50m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 2, Name = "Mushrooms", Description = "Fresh sliced mushrooms", Stock = 100, Price = 1.00m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 3, Name = "Onions", Description = "Diced red onions", Stock = 100, Price = 0.75m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 4, Name = "Green Peppers", Description = "Sliced green bell peppers", Stock = 100, Price = 0.75m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 5, Name = "Black Olives", Description = "Pitted black olives", Stock = 100, Price = 1.00m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 6, Name = "Extra Cheese", Description = "Additional mozzarella cheese", Stock = 100, Price = 1.25m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 7, Name = "Ham", Description = "Smoked ham", Stock = 100, Price = 1.50m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 8, Name = "Pineapple", Description = "Sweet pineapple chunks", Stock = 100, Price = 1.00m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 9, Name = "BBQ Chicken", Description = "Grilled BBQ chicken pieces", Stock = 100, Price = 2.00m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new ToppingEntity { Id = 10, Name = "Buffalo Chicken", Description = "Spicy buffalo chicken pieces", Stock = 100, Price = 2.00m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+
+        modelBuilder.Entity<ProductEntity>().HasData(
+            // Pizzas
+            new ProductEntity
             {
-                Id = 1,
-                OrderId = 1,
-                ProductId = 2, // Pepperoni
-                Quantity = 1,
-                ItemPrice = 28.0m,
-                TotalPrice = 33.2m
+                Id = 1, Name = "Margherita", Description = "Classic cheese and tomato pizza", BasePrice = 8.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/margherita.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 6 }, // Extra Cheese
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
             },
-            new()
+            new ProductEntity
             {
-                Id = 2,
-                OrderId = 1,
-                ProductId = 9, // Coke
-                Quantity = 1,
-                ItemPrice = 6.0m,
-                TotalPrice = 6.0m
+                Id = 2, Name = "Pepperoni", Description = "Pizza with pepperoni slices", BasePrice = 10.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/pepperoni.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 1 }, // Pepperoni
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 3, Name = "Hawaiian", Description = "Pizza with ham and pineapple", BasePrice = 11.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/hawaiian.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 7, 8 }, // Ham, Pineapple
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 4, Name = "BBQ Chicken", Description = "Pizza with BBQ chicken and onions", BasePrice = 12.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/bbq-chicken.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 3, 9 }, // Onions, BBQ Chicken
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 5, Name = "Veggie", Description = "Pizza with mixed vegetables", BasePrice = 9.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/veggie.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 2, 3, 4, 5 }, // Mushrooms, Onions, Green Peppers, Black Olives
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 6, Name = "Meat Lovers", Description = "Pizza with a variety of meats", BasePrice = 13.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/meat-lovers.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 1, 7, 9 }, // Pepperoni, Ham, BBQ Chicken
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 7, Name = "Buffalo Chicken", Description = "Spicy buffalo chicken pizza", BasePrice = 12.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/buffalo-chicken.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 10 }, // Buffalo Chicken
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 8, Name = "Supreme", Description = "The ultimate pizza with everything", BasePrice = 14.99m,
+                HasToppings = true, ImageUrl = "https://example.com/images/supreme.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7 }, // Pepperoni, Mushrooms, Onions, Green Peppers, Black Olives, Extra Cheese, Ham
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 9, Name = "Four Cheese", Description = "Pizza with four types of cheese", BasePrice = 11.49m,
+                HasToppings = true, ImageUrl = "https://example.com/images/four-cheese.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 6 }, // Extra Cheese
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            new ProductEntity
+            {
+                Id = 10, Name = "Mushroom", Description = "Pizza with fresh mushrooms", BasePrice = 10.49m,
+                HasToppings = true, ImageUrl = "https://example.com/images/mushroom.jpg",
+                ProductType = ProductType.Pizza, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ProductProperties = new ProductProperties
+                {
+                    SizeOptions = new List<SizeOption>
+                    {
+                        new SizeOption { Size = "Small", Price = 0.00m },
+                        new SizeOption { Size = "Large", Price = 3.00m }
+                    },
+                    DefaultToppingIds = new List<int> { 2 }, // Mushrooms
+                    AvailableExtraToppingIds = new List<int> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 }
+                }
+            },
+            // Starters
+            new ProductEntity
+            {
+                Id = 11, Name = "French Fries", Description = "Crispy golden french fries", BasePrice = 3.99m,
+                HasToppings = false, ImageUrl = "https://example.com/images/french-fries.jpg",
+                ProductType = ProductType.Starter, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            },
+            // Drinks
+            new ProductEntity
+            {
+                Id = 12, Name = "Coke", Description = "Classic Coca-Cola", BasePrice = 1.99m, HasToppings = false,
+                ImageUrl = "https://example.com/images/coke.jpg", ProductType = ProductType.Drink, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
+            },
+            // Drinks
+            new ProductEntity
+            {
+                Id = 13, Name = "Sprite", Description = "Lemon-lime flavored soft drink", BasePrice = 1.99m,
+                HasToppings = false, ImageUrl = "https://example.com/images/sprite.jpg",
+                ProductType = ProductType.Drink, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow
             }
-        };
-        
-        var orderItemToppings = new List<OrderItemToppingEntity>
-        {
-            new() { Id = 1, OrderItemId = 1, ToppingId = 9, Price = 2.7m, Quantity = 1},  // Bacon
-            new() { Id = 2, OrderItemId = 1, ToppingId = 10, Price = 2.5m, Quantity = 1} // Extra Cheese
-        };
-        
-        modelBuilder.Entity<OrderEntity>().HasData(order);
-        modelBuilder.Entity<PaymentEntity>().HasData(payment);
-        modelBuilder.Entity<OrderItemEntity>().HasData(orderItems);
-        modelBuilder.Entity<OrderItemToppingEntity>().HasData(orderItemToppings);
-        
-        modelBuilder.Entity<ToppingEntity>().HasData(toppings);
-        modelBuilder.Entity<ProductEntity>().HasData(products);
-        modelBuilder.Entity<ProductToppingEntity>().HasData(productToppings);
+        );
+
+        // Orders
+        modelBuilder.Entity<OrderEntity>().HasData(
+            new OrderEntity { Id = 1, UserId = 2, TotalPrice = 12.49m, Status = OrderStatus.Completed, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new OrderEntity { Id = 2, UserId = 2, TotalPrice = 15.97m, Status = OrderStatus.Completed, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+
+        // Order Items
+        modelBuilder.Entity<OrderItemEntity>().HasData(
+            // Order 1 Items
+            new OrderItemEntity
+            {
+                Id = 1, OrderId = 1, ProductId = 1, Quantity = 1, ItemPrice = 8.99m, TotalPrice = 12.49m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ItemModifiers = new ItemModifiers
+                {
+                    Size = "Small",
+                    ExtraToppings = new List<SelectedItemTopping>
+                    {
+                        new SelectedItemTopping { ToppingId = 1, Quantity = 1 }, // Extra Pepperoni
+                        new SelectedItemTopping { ToppingId = 2, Quantity = 1 } // Extra Mushrooms
+                    }
+                }
+            },
+            new OrderItemEntity { Id = 2, OrderId = 1, ProductId = 12, Quantity = 1, ItemPrice = 1.99m, TotalPrice = 1.99m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+
+            // Order 2 Items
+            new OrderItemEntity
+            {
+                Id = 3, OrderId = 2, ProductId = 2, Quantity = 1, ItemPrice = 10.99m, TotalPrice = 13.99m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow,
+                ItemModifiers = new ItemModifiers
+                {
+                    Size = "Large",
+                    ExtraToppings = new List<SelectedItemTopping>()
+                }
+            },
+            new OrderItemEntity { Id = 4, OrderId = 2, ProductId = 11, Quantity = 1, ItemPrice = 3.99m, TotalPrice = 3.99m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow },
+            new OrderItemEntity { Id = 5, OrderId = 2, ProductId = 13, Quantity = 1, ItemPrice = 1.99m, TotalPrice = 1.99m, CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow }
+        );
+
+        // Payments
+        modelBuilder.Entity<PaymentEntity>().HasData(
+            new PaymentEntity { Id = 1, OrderId = 1, Method = PaymentMethod.Online, Status = PaymentStatus.Paid, Amount = 12.49m, TransactionId = "TRN001", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, ConfirmedAt = DateTime.UtcNow, Gateway = "Stripe" },
+            new PaymentEntity { Id = 2, OrderId = 2, Method = PaymentMethod.Cash, Status = PaymentStatus.Pending, Amount = 15.97m, TransactionId = "TRN002", CreatedAt = DateTime.UtcNow, UpdatedAt = DateTime.UtcNow, ConfirmedAt = null, Gateway = "Cash" }
+        );
     }
 }

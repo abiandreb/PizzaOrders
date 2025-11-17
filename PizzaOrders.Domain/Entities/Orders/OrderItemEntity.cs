@@ -1,10 +1,14 @@
-﻿using PizzaOrders.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using PizzaOrders.Domain.Common;
 using PizzaOrders.Domain.Entities.Products;
 
 namespace PizzaOrders.Domain.Entities.Orders;
 
 public class OrderItemEntity : BaseEntity
 {
+
     public int OrderId { get; set; }
     public OrderEntity Order { get; set; }
 
@@ -15,5 +19,5 @@ public class OrderItemEntity : BaseEntity
     public decimal ItemPrice { get; set; }
     public decimal TotalPrice { get; set; }
 
-    public ICollection<OrderItemToppingEntity> OrderItemToppings { get; set; } = new List<OrderItemToppingEntity>();
+    public ItemModifiers? ItemModifiers { get; set; }
 }

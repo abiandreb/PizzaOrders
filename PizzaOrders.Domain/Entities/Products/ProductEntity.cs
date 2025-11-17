@@ -1,4 +1,6 @@
-﻿using PizzaOrders.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Newtonsoft.Json;
+using PizzaOrders.Domain.Common;
 
 namespace PizzaOrders.Domain.Entities.Products;
 
@@ -11,5 +13,5 @@ public class ProductEntity : BaseEntity
     public string ImageUrl { get; set; }
     public ProductType ProductType { get; set; }
 
-    public ICollection<ProductToppingEntity> ProductToppings { get; set; } = new List<ProductToppingEntity>();
+    public ProductProperties? ProductProperties { get; set; }
 }
