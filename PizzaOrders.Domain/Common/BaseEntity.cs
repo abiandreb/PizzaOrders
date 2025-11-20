@@ -1,4 +1,6 @@
-﻿namespace PizzaOrders.Domain.Common;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PizzaOrders.Domain.Common;
 
 public class BaseEntity
 {

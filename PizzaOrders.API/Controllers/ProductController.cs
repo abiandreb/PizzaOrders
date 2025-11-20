@@ -11,15 +11,28 @@ public class ProductController(IProductService productService, ILogger<ProductCo
     private readonly ILogger<ProductController> _logger = logger;
 
     [HttpGet]
-    public async Task<IActionResult> GetAllPizzas(int productType)
+    public async Task<IActionResult> GetAllProductsByType(int productType)
     {
-        var pizzas = await productService.GetAllProductsByType(productType, CancellationToken.None);
+        var products = await productService.GetAllProductsByType(productType, CancellationToken.None);
 
-        if (!pizzas.Any())
+        if (!products.Any())
         {
             return NotFound("No products found");
         }
         
-        return Ok(pizzas);
+        return Ok(products);
+    }
+
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProductById(int id)
+    {
+        var product = await productService.GetProductById(id, CancellationToken.None);
+        
+        if (product is null)
+        {
+            return NotFound("Product not found");
+        }
+        
+        return Ok(product);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Domain.Entities.Products;
@@ -34,6 +33,28 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
         }
         
         return products;
+    }
+
+    public async Task<ProductResponse?> GetProductById(int id, CancellationToken cancellationToken = default)
+    {
+        var product = await dbContext.Products.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+        if (product is null)
+        {
+            throw new InvalidOperationException("Product not found");
+        }
+
+        return new ProductResponse
+        {
+            Id = product.Id,
+            Name = product.Name,
+            Description = product.Description,
+            BasePrice = product.BasePrice,
+            HasToppings = product.HasToppings,
+            ProductType = product.ProductType,
+            ImageUrl = product.ImageUrl,
+            Properties = product.ProductProperties
+        };
     }
 }
 
