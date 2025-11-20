@@ -48,14 +48,22 @@ public class AppDbContext : IdentityDbContext<UserEntity, RoleEntity, int,
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Entity<UserEntity>().ToTable("Users");
-        modelBuilder.Entity<UserClaimEntity>().ToTable("UserClaims");
-        modelBuilder.Entity<UserRoleEntity>().ToTable("UserRoles");
-        modelBuilder.Entity<UserTokenEntity>().ToTable("UserTokens");
-        modelBuilder.Entity<RoleClaimsEntity>().ToTable("RoleClaims");
-        modelBuilder.Entity<UserLoginEntity>().ToTable("UserLogins");
-        modelBuilder.Entity<RoleEntity>().ToTable("Roles");
-        modelBuilder.Entity<RefreshTokenEntity>().ToTable("RefreshTokens");
+        //Domain
+        modelBuilder.Entity<OrderEntity>().ToTable("Orders", "domain");
+        modelBuilder.Entity<ProductEntity>().ToTable("Products", "domain");
+        modelBuilder.Entity<ToppingEntity>().ToTable("Toppings", "domain");
+        modelBuilder.Entity<OrderItemEntity>().ToTable("OrderItems", "domain");
+        modelBuilder.Entity<PaymentEntity>().ToTable("Payments", "domain");
+        
+        //Identity
+        modelBuilder.Entity<UserEntity>().ToTable("Users", "identity");
+        modelBuilder.Entity<UserClaimEntity>().ToTable("UserClaims", "identity");
+        modelBuilder.Entity<UserRoleEntity>().ToTable("UserRoles", "identity");
+        modelBuilder.Entity<UserTokenEntity>().ToTable("UserTokens", "identity");
+        modelBuilder.Entity<RoleClaimsEntity>().ToTable("RoleClaims", "identity");
+        modelBuilder.Entity<UserLoginEntity>().ToTable("UserLogins", "identity");
+        modelBuilder.Entity<RoleEntity>().ToTable("Roles","identity");
+        modelBuilder.Entity<RefreshTokenEntity>().ToTable("RefreshTokens", "identity");
 
         modelBuilder.Entity<OrderEntity>()
             .HasOne(o => o.Payment)

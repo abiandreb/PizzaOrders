@@ -11,23 +11,26 @@ namespace PizzaOrders.Application.Extensions;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddAppContext(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        public IServiceCollection AddAppContext(IConfiguration configuration)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<UserEntity, RoleEntity>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
+            services.AddIdentity<UserEntity, RoleEntity>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
         
-        return services;
-    }
+            return services;
+        }
 
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthService, AuthService>();
+        public IServiceCollection AddApplicationServices()
+        {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProductService, ProductService>();
         
-        return services;
+            return services;
+        }
     }
-    
 }
