@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {ProductService} from '../services/product-service';
 import {ProductsResponse} from '../interfaces/ProductResponse';
-import {HttpClient} from '@angular/common/http';
 import {JsonPipe} from '@angular/common';
 
 @Component({
