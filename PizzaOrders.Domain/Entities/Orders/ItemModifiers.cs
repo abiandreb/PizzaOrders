@@ -12,4 +12,5 @@ public class SelectedItemTopping
 {
     public int ToppingId { get; set; }
     public int Quantity { get; set; }
+    public decimal? Price { get; set; }
 }
