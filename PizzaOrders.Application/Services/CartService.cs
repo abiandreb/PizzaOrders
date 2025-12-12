@@ -1,70 +1,108 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PizzaOrders.Application.DTOs;
+using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Domain.Entities.Orders;
+using PizzaOrders.Domain.Entities.Products; // Added this line
 using PizzaOrders.Domain.Entities.Toppings;
 using PizzaOrders.Infrastructure.Data;
+using System;
 
 namespace PizzaOrders.Application.Services;
 
-public class CartService(AppDbContext dbContext, ILogger<CartService> logger)
+public class CartService(AppDbContext dbContext, ILogger<CartService> logger, ICacheService cacheService) : ICartService
 {
-    public async Task<CartDto> GetCartAsync(string userId)
+    public async Task<CartDto> GetCartAsync(Guid sessionId)
     {
-        throw new NotImplementedException();
+        var key = $"cart:{sessionId}";
+
+        var cart = await cacheService.GetAsync<CartDto>(key);
+
+        return cart ?? new CartDto(sessionId);
     }
 
-    public async Task AddToCartAsync(CartDto cartDto)
+    public async Task AddToCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds)
     {
-        ArgumentNullException.ThrowIfNull(cartDto);
+        var cart = await GetCartAsync(sessionId);
 
-        var requestedProductsIds = cartDto.Items.Select(x => x.ProductId).Distinct().ToList();
-
-        var productInDb = await dbContext.Products.Where(x => requestedProductsIds.Contains(x.Id)).ToListAsync();
-
-        if (requestedProductsIds.Count != productInDb.Count)
+        // Validate product
+        var product = await dbContext.Products.FindAsync(productId);
+        if (product == null)
         {
-            var invalidProductsIds = requestedProductsIds.Except(productInDb.Select(x => x.Id)).ToList();
-
-            logger.LogError("Products with ids {Join} not found", string.Join(", ", invalidProductsIds));
-
-            throw new InvalidOperationException($"Products with ids {string.Join(", ", invalidProductsIds)} not found");
+            throw new InvalidOperationException($"Product with id {productId} not found.");
         }
 
-        var requestedToppings = cartDto.Items
-            .Where(x => x.Modifiers?.ExtraToppings.Count > 0)
-            .SelectMany(x => x.Modifiers.ExtraToppings)
-            .Select(x => x.ToppingId)
-            .Distinct()
-            .ToList();
+        // Validate toppings
+        var existingToppings = await dbContext.Toppings
+            .Where(t => toppingIds.Contains(t.Id))
+            .ToListAsync();
 
-        var existingToppings = await dbContext.Toppings.Where(x => requestedToppings.Contains(x.Id)).ToListAsync();
-
-        if (requestedToppings.Count != existingToppings.Count)
+        if (existingToppings.Count != toppingIds.Count)
         {
-            var invalidToppingsIds = requestedToppings.Except(existingToppings.Select(x => x.Id)).ToList();
-
-            logger.LogError("Toppings with ids {Join} not found", string.Join(", ", invalidToppingsIds));
+            var invalidToppingIds = toppingIds.Except(existingToppings.Select(t => t.Id)).ToList();
+            throw new InvalidOperationException($"Toppings with ids {string.Join(", ", invalidToppingIds)} not found.");
         }
+
+        var existingCartItem = cart.Items.FirstOrDefault(item =>
+            item.ProductId == productId &&
+            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
+
+        if (existingCartItem != null)
+        {
+            existingCartItem.Quantity += quantity;
+            existingCartItem.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * existingCartItem.Quantity;
+        }
+        else
+        {
+            var newCartItem = new CartItem
+            {
+                ProductId = productId,
+                Quantity = quantity,
+                Modifiers = new ItemModifiers
+                {
+                    ExtraToppings = existingToppings.Select(t => new SelectedItemTopping { ToppingId = t.Id, Price = t.Price }).ToList()
+                }
+            };
+            newCartItem.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * newCartItem.Quantity;
+            cart.Items.Add(newCartItem);
+        }
+
+        await cacheService.SetAsync($"cart:{sessionId}", cart);
     }
     
-    public async Task RemoveFromCartAsync(int productId)
+    public async Task RemoveFromCartAsync(Guid sessionId, int productId)
     {
-        throw new NotImplementedException();
+        var cart = await GetCartAsync(sessionId);
+
+        var itemToRemove = cart.Items.FirstOrDefault(item => item.ProductId == productId);
+        if (itemToRemove != null)
+        {
+            cart.Items.Remove(itemToRemove);
+            await cacheService.SetAsync($"cart:{sessionId}", cart);
+        }
     }
 
-    public async Task ClearCartAsync(string userId)
+    public async Task ClearCartAsync(Guid sessionId)
     {
-        throw new NotImplementedException();
+        await cacheService.RemoveAsync($"cart:{sessionId}");
     }
 
-    public async Task<CartDto> UpdateCartAsync(CartDto cart)
+    public async Task UpdateCartAsync(Guid sessionId, int productId, int quantity)
     {
-        throw new NotImplementedException();
-    }
+        var cart = await GetCartAsync(sessionId);
+        var itemToUpdate = cart.Items.FirstOrDefault(item => item.ProductId == productId);
 
-    public async Task AddItems(Guid sessionId, int productId, ItemModifiers modifiers)
-    {
-
+        if (itemToUpdate != null)
+        {
+            if (quantity <= 0)
+            {
+                cart.Items.Remove(itemToUpdate);
+            }
+            else
+            {
+                itemToUpdate.Quantity = quantity;
+            }
+            await cacheService.SetAsync($"cart:{sessionId}", cart);
+        }
     }
 }
