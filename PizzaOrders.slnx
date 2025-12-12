@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="PizzaOrders.API/PizzaOrders.API.csproj" />
+  <Project Path="PizzaOrders.Application/PizzaOrders.Application.csproj" />
+  <Project Path="PizzaOrders.Domain/PizzaOrders.Domain.csproj" />
+  <Project Path="PizzaOrders.Infrastructure/PizzaOrders.Infrastructure.csproj" />
+  <Project Path="PizzaOrders.Tests/PizzaOrders.Tests.csproj" />
+</Solution>
