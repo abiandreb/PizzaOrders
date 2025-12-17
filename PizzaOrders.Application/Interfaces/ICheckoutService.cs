@@ -1,8 +1,11 @@
+using System;
+using System.Threading.Tasks;
 using PizzaOrders.Application.DTOs;
 
-namespace PizzaOrders.Application.Interfaces;
-
-public interface ICheckoutService
+namespace PizzaOrders.Application.Interfaces
 {
-    Task<CheckoutResponse> ProcessCheckoutAsync(Guid sessionId, int? userId = null);
+    public interface ICheckoutService
+    {
+        Task<OrderDto> ProcessCheckout(Guid sessionId, int? userId = null);
+    }
 }

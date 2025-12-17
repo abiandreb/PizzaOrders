@@ -1,124 +1,131 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Domain.Entities.Orders;
 using PizzaOrders.Infrastructure.Data;
 
-namespace PizzaOrders.Application.Services;
-
-public class CheckoutService(
-    AppDbContext dbContext,
-    ICartService cartService,
-    ILogger<CheckoutService> logger) : ICheckoutService
+namespace PizzaOrders.Application.Services
 {
-    public async Task<CheckoutResponse> ProcessCheckoutAsync(Guid sessionId, int? userId = null)
+    public class CheckoutService : ICheckoutService
     {
-        // 1. Load cart from Redis
-        var cart = await cartService.GetCartAsync(sessionId);
+        private readonly ICartService _cartService;
+        private readonly AppDbContext _context;
 
-        if (cart.Items.Count == 0)
+        public CheckoutService(ICartService cartService, AppDbContext context)
         {
-            throw new InvalidOperationException("Cart is empty");
+            _cartService = cartService;
+            _context = context;
         }
 
-        // 2. Validate products exist and reload current prices from SQL
-        var productIds = cart.Items.Select(i => i.ProductId).Distinct().ToList();
-        var products = await dbContext.Products
-            .Where(p => productIds.Contains(p.Id))
-            .ToDictionaryAsync(p => p.Id);
-
-        if (products.Count != productIds.Count)
+        public async Task<OrderDto> ProcessCheckout(Guid sessionId, int? userId = null)
         {
-            var missingIds = productIds.Except(products.Keys);
-            throw new InvalidOperationException($"Products not found: {string.Join(", ", missingIds)}");
-        }
-
-        // 3. Validate toppings and reload current topping prices from SQL
-        var allToppingIds = cart.Items
-            .SelectMany(i => i.Modifiers?.ExtraToppings?.Select(t => t.ToppingId) ?? Enumerable.Empty<int>())
-            .Distinct()
-            .ToList();
-
-        var toppings = await dbContext.Toppings
-            .Where(t => allToppingIds.Contains(t.Id))
-            .ToDictionaryAsync(t => t.Id);
-
-        if (allToppingIds.Count > 0 && toppings.Count != allToppingIds.Count)
-        {
-            var missingIds = allToppingIds.Except(toppings.Keys);
-            throw new InvalidOperationException($"Toppings not found: {string.Join(", ", missingIds)}");
-        }
-
-        // 4. Create Order entity
-        var order = new OrderEntity
-        {
-            UserId = userId,
-            Status = OrderStatus.New,
-            Items = new List<OrderItemEntity>()
-        };
-
-        decimal orderTotal = 0;
-
-        // 5. Create OrderItems with recalculated prices (snapshot from SQL)
-        foreach (var cartItem in cart.Items)
-        {
-            var product = products[cartItem.ProductId];
-
-            // Recalculate item price from SQL
-            decimal itemPrice = product.BasePrice;
-
-            // Add topping prices
-            if (cartItem.Modifiers?.ExtraToppings != null)
+            // 1. Get cart from Redis
+            var cart = await _cartService.GetCartAsync(sessionId);
+            if (cart == null || !cart.Items.Any())
             {
-                foreach (var topping in cartItem.Modifiers.ExtraToppings)
-                {
-                    if (toppings.TryGetValue(topping.ToppingId, out var toppingEntity))
-                    {
-                        itemPrice += toppingEntity.Price * (topping.Quantity > 0 ? topping.Quantity : 1);
-                        // Update topping price snapshot
-                        topping.Price = toppingEntity.Price;
-                    }
-                }
+                throw new InvalidOperationException("Cart is empty or not found.");
             }
 
-            var orderItem = new OrderItemEntity
+            // 2. Create a new order
+            var order = new OrderEntity
             {
-                ProductId = cartItem.ProductId,
-                Quantity = cartItem.Quantity,
-                ItemPrice = itemPrice,
-                TotalPrice = itemPrice * cartItem.Quantity,
-                ItemModifiers = cartItem.Modifiers
+                Status = OrderStatus.PaymentPending,
+                Items = new List<OrderItemEntity>(),
+                UserId = userId
             };
 
-            order.Items.Add(orderItem);
-            orderTotal += orderItem.TotalPrice;
-        }
+            decimal totalOrderPrice = 0;
 
-        order.TotalPrice = orderTotal;
-
-        // 6. Save order to SQL
-        dbContext.Orders.Add(order);
-        await dbContext.SaveChangesAsync();
-
-        // 7. Clear cart from Redis
-        await cartService.ClearCartAsync(sessionId);
-
-        // 8. Return response
-        return new CheckoutResponse
-        {
-            OrderId = order.Id,
-            TotalPrice = order.TotalPrice,
-            Status = order.Status,
-            Items = order.Items.Select(oi => new CheckoutOrderItem
+            // 3. Process each item in the cart
+            foreach (var cartItem in cart.Items)
             {
-                ProductId = oi.ProductId,
-                ProductName = products[oi.ProductId].Name,
-                Quantity = oi.Quantity,
-                ItemPrice = oi.ItemPrice,
-                TotalPrice = oi.TotalPrice,
-                Modifiers = oi.ItemModifiers
-            }).ToList()
-        };
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p => p.Id == cartItem.ProductId);
+
+                if (product == null)
+                {
+                    throw new InvalidOperationException($"Product with ID {cartItem.ProductId} not found.");
+                }
+
+                decimal itemPrice = product.BasePrice;
+                var orderItemModifiers = new ItemModifiers();
+
+                // 4. Process toppings if any
+                if (cartItem.Modifiers?.ExtraToppings != null && cartItem.Modifiers.ExtraToppings.Any())
+                {
+                    foreach (var topping in cartItem.Modifiers.ExtraToppings)
+                    {
+                        var toppingInfo = await _context.Toppings.FirstOrDefaultAsync(t => t.Id == topping.ToppingId);
+                        if (toppingInfo != null)
+                        {
+                            itemPrice += toppingInfo.Price;
+                            topping.Price = toppingInfo.Price; 
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException($"Topping with ID {topping.ToppingId} not found.");
+                        }
+                    }
+                    orderItemModifiers.ExtraToppings = cartItem.Modifiers.ExtraToppings;
+                }
+                
+                orderItemModifiers.Size = cartItem.Modifiers?.Size;
+
+                var orderItem = new OrderItemEntity
+                {
+                    ProductId = product.Id,
+                    Quantity = cartItem.Quantity,
+                    ItemPrice = itemPrice,
+                    TotalPrice = itemPrice * cartItem.Quantity,
+                    ItemModifiers = orderItemModifiers
+                };
+
+                order.Items.Add(orderItem);
+                totalOrderPrice += orderItem.TotalPrice;
+            }
+
+            order.TotalPrice = totalOrderPrice;
+
+            // 5. Save the order to the database
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            // 6. Clear the cart from Redis
+            await _cartService.ClearCartAsync(sessionId);
+
+            // 7. Map to DTO and return
+            return new OrderDto
+            {
+                OrderId = order.Id,
+                TotalPrice = order.TotalPrice,
+                OrderDate = order.CreatedAt,
+                Status = order.Status.ToString(),
+                Items = order.Items.Select(oi =>
+                {
+                    var product = _context.Products.Find(oi.ProductId);
+                    return new OrderItemDto
+                    {
+                        ProductId = oi.ProductId,
+                        Quantity = oi.Quantity,
+                        UnitPrice = oi.ItemPrice,
+                        ProductName = product?.Name ?? string.Empty,
+                        Modifiers = oi.ItemModifiers.ExtraToppings.Select(m =>
+                        {
+                            var topping = _context.Toppings.Find(m.ToppingId);
+                            return new OrderItemModifierDto()
+                            {
+                                Price = m.Price ?? 0,
+                                ToppingId = m.ToppingId,
+                                ToppingName = topping?.Name ?? string.Empty
+                            };
+                        }).ToList()
+                    };
+                }).ToList()
+            };
+        }
     }
 }

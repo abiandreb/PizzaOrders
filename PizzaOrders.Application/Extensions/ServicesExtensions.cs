@@ -32,6 +32,9 @@ public static class ServicesExtensions
             services.AddScoped<ICacheService, RedisService>();
             services.AddScoped<ICartService, CartService>();
             services.AddScoped<ICheckoutService, CheckoutService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IProductManagementService, ProductManagementService>();
+            services.AddScoped<IToppingManagementService, ToppingManagementService>();
 
             return services;
         }

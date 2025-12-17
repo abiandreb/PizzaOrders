@@ -4,14 +4,14 @@ namespace PizzaOrders.Application.DTOs;
 
 public class RegisterUserRequest
 {
-    public string Email { get; }
-    public string Password { get; }
-    public string FirstName { get; }
-    public string LastName { get; }
-    public string PhoneNumber { get; }
-    public string Address { get; }
-    public string City { get; }
-    public string Country { get; }
-    public string PostalCode { get; }
-    public string Role { get; } = UserRolesConstants.UserRole;
+    public string Email { get; init; }
+    public string Password { get; init; }
+    public string FirstName { get; init; }
+    public string LastName { get; init; }
+    public string PhoneNumber { get; init; }
+    public string Address { get; init; }
+    public string City { get; init; }
+    public string Country { get; init; }
+    public string PostalCode { get; init; }
+    public string Role { get; init; } = UserRolesConstants.UserRole;
 }

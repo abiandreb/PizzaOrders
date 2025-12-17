@@ -30,7 +30,7 @@ public class CheckoutServiceTests
         _dbContext = new AppDbContext(options);
         _mockCartService = new Mock<ICartService>();
         _mockLogger = new Mock<ILogger<CheckoutService>>();
-        _checkoutService = new CheckoutService(_dbContext, _mockCartService.Object, _mockLogger.Object);
+        _checkoutService = new CheckoutService(_mockCartService.Object, _dbContext);
     }
 
     [TearDown]
@@ -40,7 +40,7 @@ public class CheckoutServiceTests
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_EmptyCart_ThrowsException()
+    public async Task ProcessCheckout_EmptyCart_ThrowsException()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -49,11 +49,11 @@ public class CheckoutServiceTests
 
         // Act & Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await _checkoutService.ProcessCheckoutAsync(sessionId));
+            await _checkoutService.ProcessCheckout(sessionId));
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_ValidCart_CreatesOrderWithRecalculatedPrices()
+    public async Task ProcessCheckout_ValidCart_CreatesOrderWithRecalculatedPrices()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -107,14 +107,14 @@ public class CheckoutServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _checkoutService.ProcessCheckoutAsync(sessionId);
+        var result = await _checkoutService.ProcessCheckout(sessionId);
 
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.TotalPrice, Is.EqualTo(24.00m)); // (10.00 + 2.00) * 2 = 24.00 (recalculated from SQL)
         Assert.That(result.Items, Has.Count.EqualTo(1));
-        Assert.That(result.Items[0].ItemPrice, Is.EqualTo(12.00m)); // 10.00 + 2.00 (recalculated)
-        Assert.That(result.Status, Is.EqualTo(OrderStatus.New));
+        Assert.That(result.Items[0].UnitPrice, Is.EqualTo(12.00m)); // 10.00 + 2.00 (recalculated)
+        Assert.That(result.Status, Is.EqualTo(OrderStatus.PaymentPending.ToString()));
 
         // Verify order was saved
         var order = await _dbContext.Orders.Include(o => o.Items).FirstOrDefaultAsync();
@@ -130,7 +130,7 @@ public class CheckoutServiceTests
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_NonExistentProduct_ThrowsException()
+    public async Task ProcessCheckout_NonExistentProduct_ThrowsException()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -148,11 +148,11 @@ public class CheckoutServiceTests
 
         // Act & Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await _checkoutService.ProcessCheckoutAsync(sessionId));
+            await _checkoutService.ProcessCheckout(sessionId));
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_MultipleItems_CalculatesTotalCorrectly()
+    public async Task ProcessCheckout_MultipleItems_CalculatesTotalCorrectly()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -179,7 +179,7 @@ public class CheckoutServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _checkoutService.ProcessCheckoutAsync(sessionId);
+        var result = await _checkoutService.ProcessCheckout(sessionId);
 
         // Assert
         Assert.That(result.TotalPrice, Is.EqualTo(28.00m)); // (10*2) + (8*1)
@@ -187,7 +187,7 @@ public class CheckoutServiceTests
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_WithUserId_AssignsUserToOrder()
+    public async Task ProcessCheckout_WithUserId_AssignsUserToOrder()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -221,7 +221,7 @@ public class CheckoutServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _checkoutService.ProcessCheckoutAsync(sessionId, userId);
+        var result = await _checkoutService.ProcessCheckout(sessionId, userId);
 
         // Assert
         Assert.That(result.OrderId, Is.GreaterThan(0));
@@ -232,7 +232,7 @@ public class CheckoutServiceTests
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_NonExistentTopping_ThrowsException()
+    public async Task ProcessCheckout_NonExistentTopping_ThrowsException()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -274,11 +274,11 @@ public class CheckoutServiceTests
 
         // Act & Assert
         Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            await _checkoutService.ProcessCheckoutAsync(sessionId));
+            await _checkoutService.ProcessCheckout(sessionId));
     }
 
     [Test]
-    public async Task ProcessCheckoutAsync_CartWithMultipleToppings_CalculatesCorrectly()
+    public async Task ProcessCheckout_CartWithMultipleToppings_CalculatesCorrectly()
     {
         // Arrange
         var sessionId = Guid.NewGuid();
@@ -328,11 +328,11 @@ public class CheckoutServiceTests
             .Returns(Task.CompletedTask);
 
         // Act
-        var result = await _checkoutService.ProcessCheckoutAsync(sessionId);
+        var result = await _checkoutService.ProcessCheckout(sessionId);
 
         // Assert
         Assert.That(result.TotalPrice, Is.EqualTo(15.00m)); // 10 + 2 + 3
-        Assert.That(result.Items[0].ItemPrice, Is.EqualTo(15.00m));
-        Assert.That(result.Items[0].Modifiers.ExtraToppings, Has.Count.EqualTo(2));
+        Assert.That(result.Items[0].UnitPrice, Is.EqualTo(15.00m));
+        Assert.That(result.Items[0].Modifiers, Has.Count.EqualTo(2));
     }
 }

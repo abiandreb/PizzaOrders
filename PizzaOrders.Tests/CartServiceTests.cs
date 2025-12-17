@@ -164,6 +164,28 @@ namespace PizzaOrders.Tests
             Assert.That(cart.Items[0].Quantity, Is.EqualTo(5));
             _cacheServiceMock.Verify(x => x.SetAsync(It.IsAny<string>(), cart, null), Times.Once);
         }
+
+        [Test]
+        public async Task AddToCartAsync_WithToppings_ShouldCalculatePriceCorrectly()
+        {
+            // Arrange
+            var sessionId = Guid.NewGuid();
+            var product = new ProductEntity { Id = 1, Name = "Pizza", BasePrice = 10, Description = "Test Pizza", ImageUrl = "http://example.com/pizza.jpg" };
+            var topping = new ToppingEntity { Id = 1, Name = "Cheese", Price = 2, Description = "Extra cheese" };
+            _dbContext.Products.Add(product);
+            _dbContext.Toppings.Add(topping);
+            await _dbContext.SaveChangesAsync();
+
+            var cart = new CartDto(sessionId);
+            _cacheServiceMock.Setup(x => x.GetAsync<CartDto>(It.IsAny<string>())).ReturnsAsync(cart);
+
+            // Act
+            await _cartService.AddToCartAsync(sessionId, product.Id, 1, new List<int> { topping.Id });
+
+            // Assert
+            Assert.That(cart.Items, Has.Count.EqualTo(1));
+            Assert.That(cart.Items[0].TotalPrice, Is.EqualTo(12));
+        }
     }
 }
 

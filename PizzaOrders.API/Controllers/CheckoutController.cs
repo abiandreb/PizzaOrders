@@ -1,23 +1,34 @@
 using Microsoft.AspNetCore.Mvc;
+using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
+using System;
+using System.Threading.Tasks;
 
-namespace PizzaOrders.API.Controllers;
-
-[ApiController]
-[Route("[controller]")]
-public class CheckoutController(ICheckoutService checkoutService) : ControllerBase
+namespace PizzaOrders.API.Controllers
 {
-    [HttpPost("{sessionId:guid}")]
-    public async Task<IActionResult> ProcessCheckout(Guid sessionId, [FromQuery] int? userId = null)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class CheckoutController : ControllerBase
     {
-        try
+        private readonly ICheckoutService _checkoutService;
+
+        public CheckoutController(ICheckoutService checkoutService)
         {
-            var result = await checkoutService.ProcessCheckoutAsync(sessionId, userId);
-            return Ok(result);
+            _checkoutService = checkoutService;
         }
-        catch (InvalidOperationException ex)
+
+        [HttpPost("{sessionId}")]
+        public async Task<IActionResult> Checkout(Guid sessionId, [FromBody] CheckoutRequestDto? request)
         {
-            return BadRequest(new { error = ex.Message });
+            try
+            {
+                var order = await _checkoutService.ProcessCheckout(sessionId, request?.UserId);
+                return Ok(order);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }
