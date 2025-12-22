@@ -8,7 +8,7 @@ import { of, Observable, delay, tap, map, catchError } from 'rxjs';
 export class AuthService {
     private http = inject(HttpClient);
     private router = inject(Router);
-    private baseUrl = 'https://localhost:7258/api/Auth'; // TODO: Move to environment variable
+    private baseUrl = 'http://localhost:5062/api/Auth'; // TODO: Move to environment variable
 
     currentUser = signal<User | null>(this.loadUserFromStorage());
     

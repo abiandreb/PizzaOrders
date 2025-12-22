@@ -19,3 +19,15 @@ export interface Cart {
     sessionId: string;
     items: CartItem[];
 }
+
+export interface CartItemRequest {
+    productId: number;
+    quantity: number;
+    toppingIds?: number[];
+}
+
+export interface CartItemUpdateRequest {
+    productId: number;
+    quantity: number;
+    toppingIds?: number[];
+}

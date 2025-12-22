@@ -11,32 +11,29 @@ namespace PizzaOrders.Application.Extensions;
 
 public static class ServicesExtensions
 {
-    extension(IServiceCollection services)
+    public static IServiceCollection AddAppContext(this IServiceCollection services, IConfiguration configuration)
     {
-        public IServiceCollection AddAppContext(IConfiguration configuration)
-        {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<UserEntity, RoleEntity>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-        
-            return services;
-        }
+        services.AddIdentity<UserEntity, RoleEntity>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+    
+        return services;
+    }
 
-        public IServiceCollection AddApplicationServices()
-        {
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<ICacheService, RedisService>();
-            services.AddScoped<ICartService, CartService>();
-            services.AddScoped<ICheckoutService, CheckoutService>();
-            services.AddScoped<IPaymentService, PaymentService>();
-            services.AddScoped<IProductManagementService, ProductManagementService>();
-            services.AddScoped<IToppingManagementService, ToppingManagementService>();
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ICacheService, RedisService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICheckoutService, CheckoutService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IProductManagementService, ProductManagementService>();
+        services.AddScoped<IToppingManagementService, ToppingManagementService>();
 
-            return services;
-        }
+        return services;
     }
 }

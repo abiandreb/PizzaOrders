@@ -4,7 +4,7 @@ using PizzaOrders.Application.Interfaces;
 namespace PizzaOrders.API.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ProductController(IProductService productService, ILogger<ProductController> logger)
     : ControllerBase
 {

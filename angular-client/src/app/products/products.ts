@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {ProductService} from '../services/product-service';
 import {ProductsResponse} from '../interfaces/ProductResponse';
-import {JsonPipe, NgForOf} from '@angular/common';
+import {NgForOf} from '@angular/common';
 import {ProductCardComponent} from "./product-card.component";
 import {CartApiService} from "../services/cart-api.service";
 import {SessionService} from "../services/session.service";
@@ -11,7 +11,6 @@ import {CartItemRequest} from "../interfaces/cart.interface";
   selector: 'app-products',
   standalone: true,
   imports: [
-    JsonPipe,
     ProductCardComponent,
     NgForOf
   ],
@@ -57,4 +56,3 @@ export class Products implements OnInit {
     });
   }
 }
-

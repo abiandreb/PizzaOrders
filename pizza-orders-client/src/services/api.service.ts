@@ -6,7 +6,7 @@ import { Pizza, Extra, Order, OrderStatus } from '../models';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
-  private baseUrl = 'https://localhost:7258/api'; // TODO: Move to environment variable
+  private baseUrl = 'http://localhost:5062/api'; // TODO: Move to environment variable
 
   private pizzas = signal<Pizza[]>([]);
   private orders = signal<Order[]>([]);
