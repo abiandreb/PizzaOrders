@@ -1,0 +1,55 @@
+import { Component, ChangeDetectionStrategy, input, output, signal, inject, viewChild, ElementRef } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-signup-modal',
+  templateUrl: './signup-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class SignupModalComponent {
+  isVisible = input.required<boolean>();
+  closeModal = output<void>();
+  signupSuccess = output<void>();
+
+  authService = inject(AuthService);
+  
+  name = viewChild<ElementRef<HTMLInputElement>>('name');
+  email = viewChild<ElementRef<HTMLInputElement>>('email');
+  password = viewChild<ElementRef<HTMLInputElement>>('password');
+
+  isProcessing = signal(false);
+  error = signal<string | null>(null);
+
+  onClose() {
+    if (this.isProcessing()) return;
+    this.error.set(null);
+    this.closeModal.emit();
+  }
+
+  async processSignup(event: Event) {
+    event.preventDefault();
+    if (this.isProcessing()) return;
+
+    this.isProcessing.set(true);
+    this.error.set(null);
+    
+    const nameVal = this.name()?.nativeElement.value ?? '';
+    const emailVal = this.email()?.nativeElement.value ?? '';
+    const passwordVal = this.password()?.nativeElement.value ?? '';
+
+    if (!nameVal || !emailVal || !passwordVal) {
+      this.error.set('Please fill out all fields.');
+      this.isProcessing.set(false);
+      return;
+    }
+
+    try {
+      await this.authService.signUp({ name: nameVal, email: emailVal, password: passwordVal });
+      this.signupSuccess.emit();
+    } catch (err) {
+      this.error.set('Sign-up failed. Please try again.');
+    } finally {
+      this.isProcessing.set(false);
+    }
+  }
+}

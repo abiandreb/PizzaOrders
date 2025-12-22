@@ -1,0 +1,97 @@
+<main class="container mx-auto px-4 py-8">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-3xl font-bold text-gray-800">Admin Dashboard</h2>
+    <button (click)="closePanel.emit()" class="text-gray-500 hover:text-red-600">
+      <i class="fas fa-times mr-2"></i>Close Panel
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="mb-6">
+    <div class="flex border-b border-gray-200">
+      <button 
+        (click)="selectTab('products')"
+        [class]="'py-3 px-6 text-lg font-medium transition-colors duration-200 ' + (activeTab() === 'products' ? 'border-b-2 border-red-600 text-red-600' : 'text-gray-500 hover:text-gray-800')">
+        <i class="fas fa-box-open mr-2"></i> Products
+      </button>
+      <button 
+        (click)="selectTab('toppings')"
+        [class]="'py-3 px-6 text-lg font-medium transition-colors duration-200 ' + (activeTab() === 'toppings' ? 'border-b-2 border-red-600 text-red-600' : 'text-gray-500 hover:text-gray-800')">
+        <i class="fas fa-pepper-hot mr-2"></i> Toppings
+      </button>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <div class="text-center py-10">
+      <i class="fas fa-spinner fa-spin text-4xl text-red-600"></i>
+      <p class="mt-2 text-lg text-gray-600">Loading data...</p>
+    </div>
+  } @else {
+    <!-- Products Table -->
+    @if (activeTab() === 'products') {
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (product of products(); track product.id) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <img [ngSrc]="product.imageUrl" [alt]="product.name" width="40" height="40" class="w-10 h-10 rounded-full object-cover">
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ product.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ getProductTypeName(product.productType) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">${{ product.price.toFixed(2) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <button (click)="editItem(product)" class="text-blue-600 hover:text-blue-900">Edit</button>
+                  <button (click)="deleteItem(product)" class="text-red-600 hover:text-red-900">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+
+    <!-- Toppings Table -->
+    @if (activeTab() === 'toppings') {
+      <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
+              <th scope="col" class="relative px-6 py-3">
+                <span class="sr-only">Actions</span>
+              </th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (topping of toppings(); track topping.id) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">{{ topping.name }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">${{ topping.price.toFixed(2) }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-gray-500">{{ topping.stock }}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <button (click)="editItem(topping)" class="text-blue-600 hover:text-blue-900">Edit</button>
+                  <button (click)="deleteItem(topping)" class="text-red-600 hover:text-red-900">Delete</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  }
+</main>

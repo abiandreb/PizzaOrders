@@ -13,16 +13,183 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67d63b34-be46-45f4-a5b4-87881fe4c82b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/angular-client/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/index.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/metadata.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/app.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/app.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/cart/cart.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/cart/cart.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/header/header.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/header/header.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-card/product-card.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-card/product-card.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-detail/product-detail.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-detail/product-detail.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-list/product-list.component.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/components/product-list/product-list.component.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/models/product.model.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/services/api.service.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/angular-client/src/services/cart.service.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/Controllers/ProductController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/Controllers/ProductController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/app/interfaces/cart-item-request.interface.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/app/interfaces/cart-item-update-request.interface.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/app/interfaces/cart.interface.ts" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/src/app/interfaces/cart.interface.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/products.ts" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/src/app/products/products.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/environments/environment.development.ts" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/src/environments/environment.development.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/angular-client/src/environments/environment.ts" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/src/environments/environment.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/services/api.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pizza-orders-client/src/services/api.service.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/services/auth.service.ts" beforeDir="false" afterPath="$PROJECT_DIR$/pizza-orders-client/src/services/auth.service.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/.editorconfig" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/.vscode/extensions.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/.vscode/launch.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/.vscode/tasks.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/angular.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/public/favicon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.routes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.spec.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/app.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/interfaces/ProductResponse.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/interfaces/cart.interface.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/product-card.component.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/product-card.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/product-card.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/products.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/products.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/products.spec.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/products/products.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/services/cart-api.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/services/product-service.spec.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/services/product-service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/app/services/session.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/environments/environment.development.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/environments/environment.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/src/styles.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/tsconfig.app.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/angular-client/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/angular-client/tsconfig.spec.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/.tsbuildinfo" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/angular-compiler.db" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/angular-compiler.db-lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/com.chrome.devtools.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_common.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_common.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_common_http.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_common_http.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_core.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_core.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_core_rxjs-interop.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_core_rxjs-interop.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_forms.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_forms.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_platform-browser.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_platform-browser.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_router.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/@angular_router.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/_metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-4YCCEXQQ.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-4YCCEXQQ.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-AGCF4D2E.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-AGCF4D2E.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-BCDVWUQV.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-BCDVWUQV.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-J46EEYGT.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-J46EEYGT.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-LKWNSVMV.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-LKWNSVMV.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-M3EGOVYK.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-M3EGOVYK.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-MV7WUDY4.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-MV7WUDY4.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-U7EDC2PH.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-U7EDC2PH.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-XF3V7BR3.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/chunk-XF3V7BR3.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/rxjs.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/rxjs.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/rxjs_operators.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps/rxjs_operators.js.map" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps_ssr/_metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.angular/cache/20.3.8/app/vite/deps_ssr/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/angular.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/app.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/app.config.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/app.routes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/components/footer.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/components/header.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/components/loading-spinner.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/components/product-card.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/guards/admin.guard.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/guards/auth.guard.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/admin-dashboard.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/auth.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/checkout.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/contact.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/home.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/menu.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/my-orders.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/not-found.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/order-confirmation.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/pages/pizza-constructor.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/services/api.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/services/auth.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/services/cart.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/app/types.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/index.tsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/main.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/metadata.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/package-lock.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/package.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/app.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/app.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/app.routes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/footer/footer.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/footer/footer.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/header/header.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/header/header.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/pizza-card/pizza-card.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/components/pizza-card/pizza-card.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/models.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/admin-dashboard/admin-dashboard.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/admin-dashboard/admin-dashboard.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/admin.routes.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/manage-orders/manage-orders.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/manage-orders/manage-orders.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/manage-pizzas/manage-pizzas.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/admin/manage-pizzas/manage-pizzas.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/cart/cart.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/cart/cart.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/checkout/checkout.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/checkout/checkout.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/contact/contact.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/contact/contact.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/home/home.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/home/home.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/login/login.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/login/login.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/menu/menu.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/menu/menu.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/order-confirmation/order-confirmation.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/order-confirmation/order-confirmation.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/order-history/order-history.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/order-history/order-history.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/pizza-builder/pizza-builder.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/pizza-builder/pizza-builder.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/pizza-detail/pizza-detail.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/pizza-detail/pizza-detail.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/register/register.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/register/register.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/registration-confirmation/registration-confirmation.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/pages/registration-confirmation/registration-confirmation.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/services/api.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/services/auth.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/src/services/cart.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/pizza-orders-client/tsconfig.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -356,7 +523,7 @@
       <workItem from="1765536656178" duration="986000" />
       <workItem from="1765980245050" duration="1597000" />
       <workItem from="1765981873050" duration="6586000" />
-      <workItem from="1766437494777" duration="2495000" />
+      <workItem from="1766437494777" duration="3945000" />
     </task>
     <task id="LOCAL-00001" summary="project structure refactor">
       <option name="closed" value="true" />

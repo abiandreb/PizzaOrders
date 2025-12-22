@@ -1,0 +1,72 @@
+
+@if (product()) {
+  <div class="bg-white rounded-lg shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col md:flex-row animate-fade-in-up">
+    <!-- Image Section -->
+    <div class="w-full md:w-1/2">
+      <img [src]="product().imageUrl" [alt]="product().name" class="w-full h-64 md:h-full object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none">
+    </div>
+
+    <!-- Details Section -->
+    <div class="w-full md:w-1/2 p-6 flex flex-col overflow-y-auto">
+      <div class="flex justify-between items-start">
+        <h2 class="text-3xl font-bold text-gray-900">{{ product().name }}</h2>
+        <button (click)="closeModal.emit()" class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <p class="text-gray-600 mt-2">{{ product().description }}</p>
+      
+      <div class="mt-6 space-y-6 flex-grow">
+        <!-- Size Options -->
+        @if (product().productType === ProductType.Pizza && product().sizes) {
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Size</h3>
+            <div class="mt-2 flex space-x-2">
+              @for(size of product().sizes; track size) {
+                <button (click)="selectedSize.set(size)"
+                        class="px-4 py-2 rounded-full border text-sm font-medium transition-colors"
+                        [class.bg-red-600]="selectedSize() === size"
+                        [class.text-white]="selectedSize() === size"
+                        [class.border-transparent]="selectedSize() === size"
+                        [class.bg-white]="selectedSize() !== size"
+                        [class.text-gray-700]="selectedSize() !== size"
+                        [class.border-gray-300]="selectedSize() !== size"
+                        [class.hover:bg-gray-50]="selectedSize() !== size">
+                  {{ size }}
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Toppings Options -->
+        @if (product().productType === ProductType.Pizza && product().toppings) {
+          <div>
+            <h3 class="text-lg font-semibold text-gray-800">Toppings</h3>
+            <div class="mt-2 grid grid-cols-2 gap-2 text-sm">
+              @for(topping of product().toppings; track topping.id) {
+                <label class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-50 cursor-pointer">
+                  <input type="checkbox" (change)="toggleTopping(topping, $event)" class="h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-500">
+                  <span class="text-gray-700">{{ topping.name }}</span>
+                  <span class="text-gray-500 ml-auto">+${{ topping.price.toFixed(2) }}</span>
+                </label>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Quantity and Add to Cart -->
+      <div class="mt-6 pt-6 border-t flex items-center justify-between">
+        <div class="flex items-center">
+          <button (click)="decrement()" class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200">-</button>
+          <span class="w-12 text-center font-semibold">{{ quantity() }}</span>
+          <button (click)="increment()" class="px-3 py-1 rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200">+</button>
+        </div>
+        <button (click)="addToCart()" class="px-6 py-3 bg-red-600 text-white font-bold rounded-full hover:bg-red-700 transition-colors">
+          Add to Order
+        </button>
+      </div>
+    </div>
+  </div>
+}
