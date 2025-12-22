@@ -9,8 +9,8 @@ namespace PizzaOrders.Application.Interfaces
     {
         Task<CartDto> GetCartAsync(Guid sessionId);
         Task AddToCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds);
-        Task RemoveFromCartAsync(Guid sessionId, int productId);
+        Task RemoveFromCartAsync(Guid sessionId, int productId, List<int> toppingIds);
         Task ClearCartAsync(Guid sessionId);
-        Task UpdateCartAsync(Guid sessionId, int productId, int quantity);
+        Task UpdateCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds);
     }
 }

@@ -3,8 +3,6 @@ using Microsoft.Extensions.Logging;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Domain.Entities.Orders;
-using PizzaOrders.Domain.Entities.Products; // Added this line
-using PizzaOrders.Domain.Entities.Toppings;
 using PizzaOrders.Infrastructure.Data;
 using System;
 
@@ -70,11 +68,13 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
         await cacheService.SetAsync($"cart:{sessionId}", cart);
     }
     
-    public async Task RemoveFromCartAsync(Guid sessionId, int productId)
+    public async Task RemoveFromCartAsync(Guid sessionId, int productId, List<int> toppingIds)
     {
         var cart = await GetCartAsync(sessionId);
 
-        var itemToRemove = cart.Items.FirstOrDefault(item => item.ProductId == productId);
+        var itemToRemove = cart.Items.FirstOrDefault(item =>
+            item.ProductId == productId &&
+            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
         if (itemToRemove != null)
         {
             cart.Items.Remove(itemToRemove);
@@ -87,10 +87,12 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
         await cacheService.RemoveAsync($"cart:{sessionId}");
     }
 
-    public async Task UpdateCartAsync(Guid sessionId, int productId, int quantity)
+    public async Task UpdateCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds)
     {
         var cart = await GetCartAsync(sessionId);
-        var itemToUpdate = cart.Items.FirstOrDefault(item => item.ProductId == productId);
+        var itemToUpdate = cart.Items.FirstOrDefault(item =>
+            item.ProductId == productId &&
+            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
 
         if (itemToUpdate != null)
         {
@@ -102,6 +104,17 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
             {
                 itemToUpdate.Quantity = quantity;
             }
+            // Recalculate TotalPrice
+            var product = await dbContext.Products.FindAsync(productId);
+            if (product == null)
+            {
+                throw new InvalidOperationException($"Product with id {productId} not found.");
+            }
+            var existingToppings = await dbContext.Toppings
+                .Where(t => toppingIds.Contains(t.Id))
+                .ToListAsync();
+            itemToUpdate.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * itemToUpdate.Quantity;
+
             await cacheService.SetAsync($"cart:{sessionId}", cart);
         }
     }

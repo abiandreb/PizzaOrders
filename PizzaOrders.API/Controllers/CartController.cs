@@ -43,14 +43,14 @@ namespace PizzaOrders.API.Controllers
         [HttpPut("{sessionId}/update")]
         public async Task<IActionResult> UpdateCart(Guid sessionId, [FromBody] CartItemUpdateRequestDto request)
         {
-            await _cartService.UpdateCartAsync(sessionId, request.ProductId, request.Quantity);
+            await _cartService.UpdateCartAsync(sessionId, request.ProductId, request.Quantity, request.ToppingIds ?? new List<int>());
             return Ok();
         }
 
         [HttpDelete("{sessionId}/remove")]
-        public async Task<IActionResult> RemoveFromCart(Guid sessionId, [FromQuery] int productId)
+        public async Task<IActionResult> RemoveFromCart(Guid sessionId, [FromQuery] int productId, [FromQuery] List<int>? toppingIds)
         {
-            await _cartService.RemoveFromCartAsync(sessionId, productId);
+            await _cartService.RemoveFromCartAsync(sessionId, productId, toppingIds ?? new List<int>());
             return Ok();
         }
 

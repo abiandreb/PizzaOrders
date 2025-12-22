@@ -46,14 +46,12 @@ namespace PizzaOrders.Tests
         [Test]
         public void LoginAsync_WithInvalidCredentials_ThrowsUnauthorizedAccessException()
         {
-            // Arrange
             var user = new UserEntity { Email = "test@test.com" };
             var loginRequest = new AuthLoginRequest { Email = "test@test.com", Password = "Password123!" };
 
             _userManagerMock.Setup(x => x.FindByEmailAsync(loginRequest.Email)).ReturnsAsync(user);
             _userManagerMock.Setup(x => x.CheckPasswordAsync(user, loginRequest.Password)).ReturnsAsync(false);
             
-            // Act & Assert
             Assert.ThrowsAsync<UnauthorizedAccessException>(async () => await _authService.Login(loginRequest));
         }
     }

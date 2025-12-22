@@ -128,7 +128,7 @@ namespace PizzaOrders.Tests
             _cacheServiceMock.Setup(x => x.GetAsync<CartDto>(It.IsAny<string>())).ReturnsAsync(cart);
 
             // Act
-            await _cartService.RemoveFromCartAsync(sessionId, 1);
+            await _cartService.RemoveFromCartAsync(sessionId, 1, new List<int>());
 
             // Assert
             Assert.That(cart.Items, Is.Empty);
@@ -153,12 +153,16 @@ namespace PizzaOrders.Tests
         {
             // Arrange
             var sessionId = Guid.NewGuid();
+            var product = new ProductEntity { Id = 1, Name = "Pizza", BasePrice = 10, Description = "Test Pizza", ImageUrl = "http://example.com/pizza.jpg" };
+            _dbContext.Products.Add(product);
+            await _dbContext.SaveChangesAsync();
+
             var cart = new CartDto(sessionId);
             cart.Items.Add(new CartItem { ProductId = 1, Quantity = 1 });
             _cacheServiceMock.Setup(x => x.GetAsync<CartDto>(It.IsAny<string>())).ReturnsAsync(cart);
 
             // Act
-            await _cartService.UpdateCartAsync(sessionId, 1, 5);
+            await _cartService.UpdateCartAsync(sessionId, 1, 5, new List<int>());
 
             // Assert
             Assert.That(cart.Items[0].Quantity, Is.EqualTo(5));

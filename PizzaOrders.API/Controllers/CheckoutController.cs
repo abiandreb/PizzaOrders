@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
@@ -8,6 +9,7 @@ namespace PizzaOrders.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [AllowAnonymous]
     public class CheckoutController : ControllerBase
     {
         private readonly ICheckoutService _checkoutService;

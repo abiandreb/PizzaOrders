@@ -122,25 +122,25 @@ ICacheService interface ✔
 
 CartService implementation ✔
 
-CartController (6 endpoints) ☐
+CartController (6 endpoints) ✔
 
-Cart DTOs ☐
+Cart DTOs ✔
 
 Phase 2 — Checkout
 
-Validate cart contents ☐
+Validate cart contents ✔
 
-Recalculate prices from SQL ☐
+Recalculate prices from SQL ✔
 
-Create Order + OrderItems + modifiers snapshot ☐
+Create Order + OrderItems + modifiers snapshot ✔
 
 Phase 3 — Payment Stub
 
-Fake external call ☐
+Fake external call ✔
 
-Write PaymentEntity ☐
+Write PaymentEntity ✔
 
-Mark Order as Paid ☐
+Mark Order as Paid ✔
 
 Phase 4 — Admin Panel (Optional)
 
@@ -153,23 +153,23 @@ Price editing UI ☐
 Frontend Steps (Angular)
 Phase A — Core Setup
 
-Create Angular project
+Create Angular project ✔
 
-Add HttpClient module
+Add HttpClient module ✔
 
-Create CartApiService for backend communication
+Create CartApiService for backend communication ✔
 
-Store sessionId in localStorage or cookie
+Store sessionId in localStorage or cookie ✔
 
 Phase B — Product Listing Page
 
-Fetch products by type
+Fetch products by type ✔
 
-Render cards
+Render cards ✔
 
-Add “Add to Cart” button
+Add “Add to Cart” button ✔
 
-Show available sizes and toppings
+Show available sizes and toppings ☐
 
 Phase C — Cart Page
 
@@ -213,8 +213,8 @@ Price updates
   - [x] CartService class
   - [x] CartController with 6 endpoints
   - [x] Cart DTOs
-- [ ] Phase 2: Checkout
-- [ ] Phase 3: Payment Stub
+- [x] Phase 2: Checkout - COMPLETED
+- [x] Phase 3: Payment Stub - COMPLETED
 - [ ] Phase 4: Admin Panel (Optional)
 
 ## Last Updated
