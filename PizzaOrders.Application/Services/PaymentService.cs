@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
@@ -9,18 +7,11 @@ using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Application.Services
 {
-    public class PaymentService : IPaymentService
+    public class PaymentService(AppDbContext context) : IPaymentService
     {
-        private readonly AppDbContext _context;
-
-        public PaymentService(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<PaymentResponseDto> ProcessPayment(PaymentRequestDto paymentRequest)
         {
-            var order = await _context.Orders.FirstOrDefaultAsync(o => o.Id == paymentRequest.OrderId);
+            var order = await context.Orders.FirstOrDefaultAsync(o => o.Id == paymentRequest.OrderId);
 
             if (order == null)
             {
@@ -44,12 +35,12 @@ namespace PizzaOrders.Application.Services
                 ConfirmedAt = DateTime.UtcNow
             };
 
-            _context.Payments.Add(payment);
+            context.Payments.Add(payment);
 
             order.Status = OrderStatus.Paid;
             order.PaymentId = payment.Id;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
             return new PaymentResponseDto
             {

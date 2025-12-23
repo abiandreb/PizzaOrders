@@ -22,15 +22,13 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
     public async Task AddToCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds)
     {
         var cart = await GetCartAsync(sessionId);
-
-        // Validate product
+        
         var product = await dbContext.Products.FindAsync(productId);
         if (product == null)
         {
             throw new InvalidOperationException($"Product with id {productId} not found.");
         }
-
-        // Validate toppings
+        
         var existingToppings = await dbContext.Toppings
             .Where(t => toppingIds.Contains(t.Id))
             .ToListAsync();
@@ -104,7 +102,7 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
             {
                 itemToUpdate.Quantity = quantity;
             }
-            // Recalculate TotalPrice
+
             var product = await dbContext.Products.FindAsync(productId);
             if (product == null)
             {

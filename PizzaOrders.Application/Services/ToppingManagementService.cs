@@ -7,15 +7,8 @@ using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Application.Services
 {
-    public class ToppingManagementService : IToppingManagementService
+    public class ToppingManagementService(AppDbContext context) : IToppingManagementService
     {
-        private readonly AppDbContext _context;
-
-        public ToppingManagementService(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<ToppingResponseDto> CreateToppingAsync(CreateToppingRequestDto request)
         {
             var topping = new ToppingEntity
@@ -26,8 +19,8 @@ namespace PizzaOrders.Application.Services
                 Stock = request.Stock
             };
 
-            _context.Toppings.Add(topping);
-            await _context.SaveChangesAsync();
+            context.Toppings.Add(topping);
+            await context.SaveChangesAsync();
             
             return new ToppingResponseDto
             {
@@ -41,7 +34,7 @@ namespace PizzaOrders.Application.Services
 
         public async Task<ToppingResponseDto> UpdateToppingAsync(UpdateToppingRequestDto request)
         {
-            var topping = await _context.Toppings.FirstOrDefaultAsync(t => t.Id == request.Id);
+            var topping = await context.Toppings.FirstOrDefaultAsync(t => t.Id == request.Id);
 
             if (topping == null)
             {
@@ -53,7 +46,7 @@ namespace PizzaOrders.Application.Services
             if (request.Price.HasValue) topping.Price = request.Price.Value;
             if (request.Stock.HasValue) topping.Stock = request.Stock.Value;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             
             return new ToppingResponseDto
             {
@@ -67,15 +60,15 @@ namespace PizzaOrders.Application.Services
 
         public async Task DeleteToppingAsync(int toppingId)
         {
-            var topping = await _context.Toppings.FirstOrDefaultAsync(t => t.Id == toppingId);
+            var topping = await context.Toppings.FirstOrDefaultAsync(t => t.Id == toppingId);
 
             if (topping == null)
             {
                 throw new System.InvalidOperationException("Topping not found.");
             }
 
-            _context.Toppings.Remove(topping);
-            await _context.SaveChangesAsync();
+            context.Toppings.Remove(topping);
+            await context.SaveChangesAsync();
         }
     }
 }

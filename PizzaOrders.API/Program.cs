@@ -42,32 +42,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-var tokenValidationParameters = new TokenValidationParameters()
-{
-    ValidateIssuerSigningKey = true,
-    IssuerSigningKey = new SymmetricSecurityKey(
-        Encoding.ASCII.GetBytes(builder.Configuration["JWT:Secret"] 
-                                ?? throw new InvalidOperationException())),
-    ValidateIssuer = true,
-    ValidIssuer = builder.Configuration["JWT:Issuer"],
-    ValidateAudience = true,
-    ValidAudience = builder.Configuration["JWT:Audience"],
-    ValidateLifetime = true
-};
-
-builder.Services.AddSingleton(tokenValidationParameters);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(options =>
-{
-    options.SaveToken = true;
-    options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = tokenValidationParameters;
-});
+builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
 

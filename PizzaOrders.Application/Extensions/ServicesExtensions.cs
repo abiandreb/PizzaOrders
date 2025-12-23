@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Application.Services;
 using PizzaOrders.Domain.Entities.AuthEntities;
@@ -11,29 +14,58 @@ namespace PizzaOrders.Application.Extensions;
 
 public static class ServicesExtensions
 {
-    public static IServiceCollection AddAppContext(this IServiceCollection services, IConfiguration configuration)
+    extension(IServiceCollection services)
     {
-        services.AddDbContext<AppDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+        public void AddAppContext(IConfiguration configuration)
+        {
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
-        services.AddIdentity<UserEntity, RoleEntity>()
-            .AddEntityFrameworkStores<AppDbContext>()
-            .AddDefaultTokenProviders();
-    
-        return services;
-    }
+            services.AddIdentity<UserEntity, RoleEntity>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
+        }
 
-    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
-    {
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<ICacheService, RedisService>();
-        services.AddScoped<ICartService, CartService>();
-        services.AddScoped<ICheckoutService, CheckoutService>();
-        services.AddScoped<IPaymentService, PaymentService>();
-        services.AddScoped<IProductManagementService, ProductManagementService>();
-        services.AddScoped<IToppingManagementService, ToppingManagementService>();
+        public void AddApplicationServices()
+        {
+            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IProductService, ProductService>();
+            services.AddScoped<ICacheService, RedisService>();
+            services.AddScoped<ICartService, CartService>();
+            services.AddScoped<ICheckoutService, CheckoutService>();
+            services.AddScoped<IPaymentService, PaymentService>();
+            services.AddScoped<IProductManagementService, ProductManagementService>();
+            services.AddScoped<IToppingManagementService, ToppingManagementService>();
+        }
 
-        return services;
+        public void AddIdentityServices(IConfiguration configuration)
+        {
+            var tokenValidationParameters = new TokenValidationParameters()
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.ASCII.GetBytes(configuration["JWT:Secret"] 
+                                            ?? throw new InvalidOperationException())),
+                ValidateIssuer = true,
+                ValidIssuer = configuration["JWT:Issuer"],
+                ValidateAudience = true,
+                ValidAudience = configuration["JWT:Audience"],
+                ValidateLifetime = true
+            };
+
+            services.AddSingleton(tokenValidationParameters);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.SaveToken = true;
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = tokenValidationParameters;
+            });
+        }
     }
 }

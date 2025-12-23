@@ -6,15 +6,8 @@ using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Application.Services
 {
-    public class ProductManagementService : IProductManagementService
+    public class ProductManagementService(AppDbContext context) : IProductManagementService
     {
-        private readonly AppDbContext _context;
-
-        public ProductManagementService(AppDbContext context)
-        {
-            _context = context;
-        }
-
         public async Task<ProductResponse> CreateProductAsync(CreateProductRequestDto request)
         {
             var product = new ProductEntity
@@ -28,8 +21,8 @@ namespace PizzaOrders.Application.Services
                 ProductProperties = request.Properties
             };
 
-            _context.Products.Add(product);
-            await _context.SaveChangesAsync();
+            context.Products.Add(product);
+            await context.SaveChangesAsync();
 
             return new ProductResponse
             {
@@ -46,7 +39,7 @@ namespace PizzaOrders.Application.Services
 
         public async Task<ProductResponse> UpdateProductAsync(UpdateProductRequestDto request)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
+            var product = await context.Products.FirstOrDefaultAsync(p => p.Id == request.Id);
 
             if (product == null)
             {
@@ -61,7 +54,7 @@ namespace PizzaOrders.Application.Services
             if (request.ImageUrl != null) product.ImageUrl = request.ImageUrl;
             if (request.Properties != null) product.ProductProperties = request.Properties;
 
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
             
             return new ProductResponse
             {
@@ -78,15 +71,15 @@ namespace PizzaOrders.Application.Services
 
         public async Task DeleteProductAsync(int productId)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            var product = await context.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
             if (product == null)
             {
                 throw new System.InvalidOperationException("Product not found.");
             }
 
-            _context.Products.Remove(product);
-            await _context.SaveChangesAsync();
+            context.Products.Remove(product);
+            await context.SaveChangesAsync();
         }
     }
 }
