@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrders.Application.DTOs;
@@ -9,6 +11,22 @@ namespace PizzaOrders.Application.Services
 {
     public class ToppingManagementService(AppDbContext context) : IToppingManagementService
     {
+        public async Task<IEnumerable<ToppingResponseDto>> GetAllToppingsAsync()
+        {
+            var toppings = await context.Toppings
+                .OrderBy(t => t.Name)
+                .Select(t => new ToppingResponseDto
+                {
+                    Id = t.Id,
+                    Name = t.Name,
+                    Description = t.Description,
+                    Price = t.Price,
+                    Stock = t.Stock
+                }).ToListAsync();
+            
+            return toppings;
+        }
+        
         public async Task<ToppingResponseDto> CreateToppingAsync(CreateToppingRequestDto request)
         {
             var topping = new ToppingEntity

@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
@@ -30,6 +32,29 @@ namespace PizzaOrders.Tests
         public void TearDown()
         {
             _dbContext?.Dispose();
+        }
+
+        [Test]
+        public async Task GetAllToppingsAsync_WhenCalled_ReturnsAllToppings()
+        {
+            // Arrange
+            var toppings = new List<ToppingEntity>
+            {
+                new ToppingEntity { Name = "Topping A", Description = "Desc", Price = 1.0m },
+                new ToppingEntity { Name = "Topping B", Description = "Desc", Price = 1.5m }
+            };
+            await _dbContext.Toppings.AddRangeAsync(toppings);
+            await _dbContext.SaveChangesAsync();
+            
+            // Act
+            var result = await _toppingManagementService.GetAllToppingsAsync();
+            
+            // Assert
+            var toppingResponseDtos = result.ToList();
+            Assert.That(toppingResponseDtos, Is.Not.Null);
+            Assert.That(toppingResponseDtos, Is.Not.Empty);
+            Assert.That(toppingResponseDtos, Has.Count.EqualTo(2));
+            Assert.That(toppingResponseDtos[0].Name, Is.EqualTo("Topping A"));
         }
 
         [Test]

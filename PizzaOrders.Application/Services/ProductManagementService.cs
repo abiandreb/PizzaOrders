@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
@@ -8,6 +11,25 @@ namespace PizzaOrders.Application.Services
 {
     public class ProductManagementService(AppDbContext context) : IProductManagementService
     {
+        public async Task<IEnumerable<ProductResponse>> GetAllProductsAsync()
+        {
+            var products = await context.Products
+                .OrderBy(p => p.Name)
+                .Select(p => new ProductResponse
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Description = p.Description,
+                    BasePrice = p.BasePrice,
+                    HasToppings = p.HasToppings,
+                    ProductType = p.ProductType,
+                    ImageUrl = p.ImageUrl,
+                    Properties = p.ProductProperties
+                }).ToListAsync();
+            
+            return products;
+        }
+        
         public async Task<ProductResponse> CreateProductAsync(CreateProductRequestDto request)
         {
             var product = new ProductEntity

@@ -18,6 +18,13 @@ namespace PizzaOrders.API.Controllers
         {
             _toppingManagementService = toppingManagementService;
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> GetAllToppings()
+        {
+            var result = await _toppingManagementService.GetAllToppingsAsync();
+            return Ok(result);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateTopping([FromBody] CreateToppingRequestDto request)

@@ -19,6 +19,13 @@ namespace PizzaOrders.API.Controllers
             _productManagementService = productManagementService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var result = await _productManagementService.GetAllProductsAsync();
+            return Ok(result);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDto request)
         {
