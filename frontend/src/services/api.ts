@@ -44,20 +44,32 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       async (error) => {
-        if (error.response?.status === 401) {
+        const originalRequest = error.config;
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+
           const refreshToken = localStorage.getItem('refreshToken');
-          if (refreshToken) {
+          const token = localStorage.getItem('token');
+
+          if (refreshToken && token) {
             try {
               const response = await this.refreshToken(refreshToken);
               localStorage.setItem('token', response.token);
               localStorage.setItem('refreshToken', response.refreshToken);
-              error.config.headers.Authorization = `Bearer ${response.token}`;
-              return this.client.request(error.config);
-            } catch {
+              originalRequest.headers.Authorization = `Bearer ${response.token}`;
+              return this.client.request(originalRequest);
+            } catch (refreshError) {
               localStorage.removeItem('token');
               localStorage.removeItem('refreshToken');
               window.location.href = '/login';
+              return Promise.reject(refreshError);
             }
+          } else {
+            // No tokens available, redirect to login
+            localStorage.removeItem('token');
+            localStorage.removeItem('refreshToken');
+            window.location.href = '/login';
           }
         }
         return Promise.reject(error);

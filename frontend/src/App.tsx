@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
@@ -14,6 +15,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <BrowserRouter>
+          <Toaster position="top-right" />
           <Routes>
             <Route path="/" element={<ProductsPage />} />
             <Route path="/cart" element={<CartPage />} />

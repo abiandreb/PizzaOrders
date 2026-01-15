@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
 import { CartItem } from '../../components/cart/CartItem';
 import { useCart } from '../../hooks/useCart';
@@ -15,16 +16,17 @@ export const CartPage: React.FC = () => {
   ) => {
     try {
       await updateCart({ productId, quantity, toppingIds });
-    } catch (err) {
-      alert('Failed to update cart');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to update cart');
     }
   };
 
   const handleRemove = async (productId: number, toppingIds: number[]) => {
     try {
       await removeFromCart(productId, toppingIds);
-    } catch (err) {
-      alert('Failed to remove item');
+      toast.success('Item removed from cart');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to remove item');
     }
   };
 
@@ -32,8 +34,9 @@ export const CartPage: React.FC = () => {
     if (window.confirm('Are you sure you want to clear your cart?')) {
       try {
         await clearCart();
-      } catch (err) {
-        alert('Failed to clear cart');
+        toast.success('Cart cleared');
+      } catch (err: any) {
+        toast.error(err.response?.data?.message || 'Failed to clear cart');
       }
     }
   };

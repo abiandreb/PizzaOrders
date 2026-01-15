@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
 import type { Product, Topping } from '../../types';
 import { ProductType } from '../../types';
@@ -26,8 +27,8 @@ export const AdminPage: React.FC = () => {
         const data = await api.getAllToppings();
         setToppings(data);
       }
-    } catch (err) {
-      alert('Failed to load data');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -37,9 +38,10 @@ export const AdminPage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
       await api.deleteProduct(id);
+      toast.success('Product deleted successfully');
       await loadData();
-    } catch (err) {
-      alert('Failed to delete product');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete product');
     }
   };
 
@@ -47,9 +49,10 @@ export const AdminPage: React.FC = () => {
     if (!window.confirm('Are you sure you want to delete this topping?')) return;
     try {
       await api.deleteTopping(id);
+      toast.success('Topping deleted successfully');
       await loadData();
-    } catch (err) {
-      alert('Failed to delete topping');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to delete topping');
     }
   };
 
@@ -69,13 +72,15 @@ export const AdminPage: React.FC = () => {
     try {
       if (editingProduct) {
         await api.updateProduct({ ...productData, id: editingProduct.id });
+        toast.success('Product updated successfully');
       } else {
         await api.createProduct(productData);
+        toast.success('Product created successfully');
       }
       setEditingProduct(null);
       await loadData();
-    } catch (err) {
-      alert('Failed to save product');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to save product');
     }
   };
 
@@ -93,13 +98,15 @@ export const AdminPage: React.FC = () => {
     try {
       if (editingTopping) {
         await api.updateTopping({ ...toppingData, id: editingTopping.id });
+        toast.success('Topping updated successfully');
       } else {
         await api.createTopping(toppingData);
+        toast.success('Topping created successfully');
       }
       setEditingTopping(null);
       await loadData();
-    } catch (err) {
-      alert('Failed to save topping');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to save topping');
     }
   };
 
