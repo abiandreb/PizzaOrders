@@ -18,35 +18,51 @@ public static class SeedExtensions
 
         modelBuilder.Entity<RoleEntity>().HasData(adminRole, userRole);
 
+        // Admin User - Username: admin@pizzaorders.com, Password: Admin123!
         var adminUser = new UserEntity
         {
             Id = 1,
-            UserName = "admin",
-            NormalizedUserName = "ADMIN",
-            Email = "admin@example.com",
-            NormalizedEmail = "ADMIN@EXAMPLE.COM",
+            UserName = "admin@pizzaorders.com",
+            NormalizedUserName = "ADMIN@PIZZAORDERS.COM",
+            Email = "admin@pizzaorders.com",
+            NormalizedEmail = "ADMIN@PIZZAORDERS.COM",
             EmailConfirmed = true,
-            PasswordHash = "AQAAAAIAAYagAAAAEJ/n/y4nL5z0mJ6/BEiXzY3T2gR8gUaZa/tG2gR8gUaZa/tG2gR8gUaZa/tG2g==",
-            SecurityStamp = "9239922b-2875-4350-a926-2184462719a4"
+            PasswordHash = "AQAAAAEAACcQAAAAECM8urhnYbjZrzD1hm7LpGKIzTlpRCtRn3xjyDrluo3SrVMaSio9XINiO2ZHm9kV6Q==",
+            SecurityStamp = Guid.NewGuid().ToString()
         };
 
+        // Regular User - Username: user@pizzaorders.com, Password: User123!
         var regularUser = new UserEntity
         {
             Id = 2,
-            UserName = "user",
-            NormalizedUserName = "USER",
-            Email = "user@example.com",
-            NormalizedEmail = "USER@EXAMPLE.COM",
+            UserName = "user@pizzaorders.com",
+            NormalizedUserName = "USER@PIZZAORDERS.COM",
+            Email = "user@pizzaorders.com",
+            NormalizedEmail = "USER@PIZZAORDERS.COM",
             EmailConfirmed = true,
-            PasswordHash = "AQAAAAIAAYagAAAAEJ/n/y4nL5z0mJ6/BEiXzY3T2gR8gUaZa/tG2gR8gUaZa/tG2gR8gUaZa/tG2g==",
-            SecurityStamp = "e178d197-36e7-4935-a744-83a3162b77a7"
+            PasswordHash = "AQAAAAEAACcQAAAAEIZDa3uUwJeh7hemK0lcE9Q7dgcZnGXUPuTAs1wvSIWwaAi4v6AW82fFkRlWHwzrGQ==",
+            SecurityStamp = Guid.NewGuid().ToString()
         };
 
-        modelBuilder.Entity<UserEntity>().HasData(adminUser, regularUser);
+        // Test User - Username: test@pizzaorders.com, Password: Test123!
+        var testUser = new UserEntity
+        {
+            Id = 3,
+            UserName = "test@pizzaorders.com",
+            NormalizedUserName = "TEST@PIZZAORDERS.COM",
+            Email = "test@pizzaorders.com",
+            NormalizedEmail = "TEST@PIZZAORDERS.COM",
+            EmailConfirmed = true,
+            PasswordHash = "AQAAAAEAACcQAAAAEPGiCJ2u8hbbqfojZeJjZJBKSBtai0edJrx1y+zegh6wN6+YSWt/Q6F2Jjn22KkZgQ==",
+            SecurityStamp = Guid.NewGuid().ToString()
+        };
+
+        modelBuilder.Entity<UserEntity>().HasData(adminUser, regularUser, testUser);
 
         modelBuilder.Entity<UserRoleEntity>().HasData(
-            new UserRoleEntity { UserId = 1, RoleId = 1 },
-            new UserRoleEntity { UserId = 2, RoleId = 2 }
+            new UserRoleEntity { UserId = 1, RoleId = 1 },  // Admin is Admin role
+            new UserRoleEntity { UserId = 2, RoleId = 2 },  // Regular User is User role
+            new UserRoleEntity { UserId = 3, RoleId = 2 }   // Test User is User role
         );
         
         // Toppings
