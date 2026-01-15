@@ -8,7 +8,9 @@ using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Application.Services;
 using PizzaOrders.Domain.Entities.AuthEntities;
+using PizzaOrders.Domain.Interfaces;
 using PizzaOrders.Infrastructure.Data;
+using PizzaOrders.Infrastructure.Services;
 
 namespace PizzaOrders.Application.Extensions;
 
@@ -36,6 +38,7 @@ public static class ServicesExtensions
             services.AddScoped<IPaymentService, PaymentService>();
             services.AddScoped<IProductManagementService, ProductManagementService>();
             services.AddScoped<IToppingManagementService, ToppingManagementService>();
+            services.AddScoped<IImageStorageService, AzuriteImageStorageService>();
         }
 
         public void AddIdentityServices(IConfiguration configuration)

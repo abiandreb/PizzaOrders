@@ -20,8 +20,6 @@ builder.Services.AddAppContext(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 
-builder.Services.AddStorageServices();
-
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? throw new InvalidOperationException("Redis connection string not found.");

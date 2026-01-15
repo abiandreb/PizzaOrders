@@ -14,8 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="67d63b34-be46-45f4-a5b4-87881fe4c82b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -361,7 +359,7 @@
       <workItem from="1767382001589" duration="563000" />
       <workItem from="1768482223215" duration="56000" />
       <workItem from="1768482302472" duration="2625000" />
-      <workItem from="1768488014759" duration="4140000" />
+      <workItem from="1768488014759" duration="5127000" />
     </task>
     <task id="LOCAL-00001" summary="project structure refactor">
       <option name="closed" value="true" />
