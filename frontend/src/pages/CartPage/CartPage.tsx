@@ -3,11 +3,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
 import { CartItem } from '../../components/cart/CartItem';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
 import { useCart } from '../../hooks/useCart';
+import { useConfirm } from '../../hooks/useConfirm';
 
 export const CartPage: React.FC = () => {
   const { cart, loading, updateCart, removeFromCart, clearCart } = useCart();
   const navigate = useNavigate();
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
 
   const handleUpdateQuantity = async (
     productId: number,
@@ -31,13 +34,20 @@ export const CartPage: React.FC = () => {
   };
 
   const handleClearCart = async () => {
-    if (window.confirm('Are you sure you want to clear your cart?')) {
-      try {
-        await clearCart();
-        toast.success('Cart cleared');
-      } catch (err: any) {
-        toast.error(err.response?.data?.message || 'Failed to clear cart');
-      }
+    const confirmed = await confirm({
+      title: 'Clear Cart',
+      message: 'Are you sure you want to clear your cart? All items will be removed.',
+      confirmText: 'Clear Cart',
+      cancelText: 'Cancel',
+    });
+
+    if (!confirmed) return;
+
+    try {
+      await clearCart();
+      toast.success('Cart cleared');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to clear cart');
     }
   };
 
@@ -122,6 +132,17 @@ export const CartPage: React.FC = () => {
           </div>
         </div>
       </div>
+
+      <ConfirmModal
+        isOpen={isOpen}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        confirmButtonClass={options.confirmButtonClass}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </Layout>
   );
 };

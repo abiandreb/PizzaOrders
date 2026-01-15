@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
+import { ConfirmModal } from '../../components/common/ConfirmModal';
+import { useConfirm } from '../../hooks/useConfirm';
 import type { Product, Topping } from '../../types';
 import { ProductType } from '../../types';
 import { api } from '../../services/api';
@@ -12,6 +14,7 @@ export const AdminPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [editingTopping, setEditingTopping] = useState<Topping | null>(null);
+  const { confirm, isOpen, options, handleConfirm, handleCancel } = useConfirm();
 
   useEffect(() => {
     loadData();
@@ -35,7 +38,15 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleDeleteProduct = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    const confirmed = await confirm({
+      title: 'Delete Product',
+      message: 'Are you sure you want to delete this product? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+    });
+
+    if (!confirmed) return;
+
     try {
       await api.deleteProduct(id);
       toast.success('Product deleted successfully');
@@ -46,7 +57,15 @@ export const AdminPage: React.FC = () => {
   };
 
   const handleDeleteTopping = async (id: number) => {
-    if (!window.confirm('Are you sure you want to delete this topping?')) return;
+    const confirmed = await confirm({
+      title: 'Delete Topping',
+      message: 'Are you sure you want to delete this topping? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+    });
+
+    if (!confirmed) return;
+
     try {
       await api.deleteTopping(id);
       toast.success('Topping deleted successfully');
@@ -403,6 +422,17 @@ export const AdminPage: React.FC = () => {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={isOpen}
+        title={options.title}
+        message={options.message}
+        confirmText={options.confirmText}
+        cancelText={options.cancelText}
+        confirmButtonClass={options.confirmButtonClass}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+      />
     </Layout>
   );
 };

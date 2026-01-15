@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
 import { useCart } from '../../hooks/useCart';
 import { api } from '../../services/api';
@@ -12,7 +13,7 @@ export const CheckoutPage: React.FC = () => {
 
   const handleCheckout = async () => {
     if (!cart || cart.items.length === 0) {
-      alert('Cart is empty');
+      toast.error('Cart is empty');
       navigate('/cart');
       return;
     }
@@ -25,10 +26,14 @@ export const CheckoutPage: React.FC = () => {
 
       await clearCart();
 
-      alert(`Order placed successfully! Order ID: ${order.orderId}`);
+      toast.success(`Order placed successfully! Order ID: ${order.orderId}`, {
+        duration: 5000,
+      });
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data || 'Checkout failed. Please try again.');
+      const errorMsg = err.response?.data || 'Checkout failed. Please try again.';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }

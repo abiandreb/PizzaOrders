@@ -14,16 +14,6 @@
   <component name="ChangeListManager">
     <list default="true" id="67d63b34-be46-45f4-a5b4-87881fe4c82b" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/Controllers/AuthController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CartDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CartDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/RefreshTokenRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/RefreshTokenRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/RegisterUserRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/RegisterUserRequest.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/AuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/AuthService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/CartService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/CartService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/CheckoutService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/CheckoutService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" afterDir="false" />
     </list>
@@ -371,7 +361,7 @@
       <workItem from="1767382001589" duration="563000" />
       <workItem from="1768482223215" duration="56000" />
       <workItem from="1768482302472" duration="2625000" />
-      <workItem from="1768488014759" duration="2792000" />
+      <workItem from="1768488014759" duration="4140000" />
     </task>
     <task id="LOCAL-00001" summary="project structure refactor">
       <option name="closed" value="true" />
@@ -613,7 +603,15 @@
       <option name="project" value="LOCAL" />
       <updated>1768489022647</updated>
     </task>
-    <option name="localTasksCounter" value="31" />
+    <task id="LOCAL-00031" summary="fixes">
+      <option name="closed" value="true" />
+      <created>1768491020505</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1768491020505</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -629,7 +627,6 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-    <MESSAGE value="added generating of access and refresh tokens" />
     <MESSAGE value="added unit tests and github action" />
     <MESSAGE value="added role based auth" />
     <MESSAGE value="updatedt Identity tables" />
@@ -654,7 +651,8 @@
     <MESSAGE value="minor refactoring" />
     <MESSAGE value="added ui, added azurite service to store images" />
     <MESSAGE value="seed admins" />
-    <option name="LAST_COMMIT_MESSAGE" value="seed admins" />
+    <MESSAGE value="fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

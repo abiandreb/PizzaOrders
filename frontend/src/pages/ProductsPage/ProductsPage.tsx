@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { Layout } from '../../components/common/Layout';
 import { ProductCard } from '../../components/products/ProductCard';
 import type { Product } from '../../types';
@@ -25,6 +26,7 @@ export const ProductsPage: React.FC = () => {
       setProducts(data);
     } catch (err) {
       setError('Failed to load products');
+      toast.error('Failed to load products');
       console.error(err);
     } finally {
       setLoading(false);
@@ -34,9 +36,9 @@ export const ProductsPage: React.FC = () => {
   const handleAddToCart = async (productId: number, quantity: number, toppingIds: number[]) => {
     try {
       await addToCart({ productId, quantity, toppingIds });
-      alert('Item added to cart!');
-    } catch (err) {
-      alert('Failed to add item to cart');
+      toast.success('Item added to cart!');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Failed to add item to cart');
     }
   };
 
