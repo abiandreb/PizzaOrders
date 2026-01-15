@@ -51,25 +51,29 @@ namespace PizzaOrders.Application.Services
                 var orderItemModifiers = new ItemModifiers();
 
                 // 4. Process toppings if any
-                if (cartItem.Modifiers?.ExtraToppings != null && cartItem.Modifiers.ExtraToppings.Any())
+                if (cartItem.ToppingIds != null && cartItem.ToppingIds.Any())
                 {
-                    foreach (var topping in cartItem.Modifiers.ExtraToppings)
+                    var toppings = await _context.Toppings
+                        .Where(t => cartItem.ToppingIds.Contains(t.Id))
+                        .ToListAsync();
+
+                    if (toppings.Count != cartItem.ToppingIds.Count)
                     {
-                        var toppingInfo = await _context.Toppings.FirstOrDefaultAsync(t => t.Id == topping.ToppingId);
-                        if (toppingInfo != null)
-                        {
-                            itemPrice += toppingInfo.Price;
-                            topping.Price = toppingInfo.Price; 
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException($"Topping with ID {topping.ToppingId} not found.");
-                        }
+                        var invalidIds = cartItem.ToppingIds.Except(toppings.Select(t => t.Id)).ToList();
+                        throw new InvalidOperationException($"Toppings with IDs {string.Join(", ", invalidIds)} not found.");
                     }
-                    orderItemModifiers.ExtraToppings = cartItem.Modifiers.ExtraToppings;
+
+                    foreach (var topping in toppings)
+                    {
+                        itemPrice += topping.Price;
+                    }
+
+                    orderItemModifiers.ExtraToppings = toppings.Select(t => new SelectedItemTopping
+                    {
+                        ToppingId = t.Id,
+                        Price = t.Price
+                    }).ToList();
                 }
-                
-                orderItemModifiers.Size = cartItem.Modifiers?.Size;
 
                 var orderItem = new OrderItemEntity
                 {

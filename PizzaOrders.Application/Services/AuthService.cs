@@ -42,12 +42,9 @@ public class AuthService : IAuthService
         
         var user = new UserEntity
         {
-            Id = 0,
             UserName = payload.Email,
-            NormalizedUserName = null,
             Email = payload.Email,
-            SecurityStamp = Guid.NewGuid()
-                .ToString(),
+            EmailConfirmed = true,
             PhoneNumber = payload.PhoneNumber,
             Address = payload.Address
         };

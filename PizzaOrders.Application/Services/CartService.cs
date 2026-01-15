@@ -22,13 +22,13 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
     public async Task AddToCartAsync(Guid sessionId, int productId, int quantity, List<int> toppingIds)
     {
         var cart = await GetCartAsync(sessionId);
-        
+
         var product = await dbContext.Products.FindAsync(productId);
         if (product == null)
         {
             throw new InvalidOperationException($"Product with id {productId} not found.");
         }
-        
+
         var existingToppings = await dbContext.Toppings
             .Where(t => toppingIds.Contains(t.Id))
             .ToListAsync();
@@ -41,7 +41,7 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
 
         var existingCartItem = cart.Items.FirstOrDefault(item =>
             item.ProductId == productId &&
-            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
+            item.ToppingIds.OrderBy(id => id).SequenceEqual(toppingIds.OrderBy(id => id)));
 
         if (existingCartItem != null)
         {
@@ -50,19 +50,25 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
         }
         else
         {
-            var newCartItem = new CartItem
+            var newCartItem = new CartItemDto
             {
                 ProductId = productId,
+                ProductName = product.Name,
                 Quantity = quantity,
-                Modifiers = new ItemModifiers
+                BasePrice = product.BasePrice,
+                ToppingIds = toppingIds,
+                Toppings = existingToppings.Select(t => new CartToppingDto
                 {
-                    ExtraToppings = existingToppings.Select(t => new SelectedItemTopping { ToppingId = t.Id, Price = t.Price }).ToList()
-                }
+                    ToppingId = t.Id,
+                    ToppingName = t.Name,
+                    Price = t.Price
+                }).ToList(),
+                TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * quantity
             };
-            newCartItem.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * newCartItem.Quantity;
             cart.Items.Add(newCartItem);
         }
 
+        cart.TotalPrice = cart.Items.Sum(i => i.TotalPrice);
         await cacheService.SetAsync($"cart:{sessionId}", cart);
     }
     
@@ -72,10 +78,11 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
 
         var itemToRemove = cart.Items.FirstOrDefault(item =>
             item.ProductId == productId &&
-            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
+            item.ToppingIds.OrderBy(id => id).SequenceEqual(toppingIds.OrderBy(id => id)));
         if (itemToRemove != null)
         {
             cart.Items.Remove(itemToRemove);
+            cart.TotalPrice = cart.Items.Sum(i => i.TotalPrice);
             await cacheService.SetAsync($"cart:{sessionId}", cart);
         }
     }
@@ -90,7 +97,7 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
         var cart = await GetCartAsync(sessionId);
         var itemToUpdate = cart.Items.FirstOrDefault(item =>
             item.ProductId == productId &&
-            item.Modifiers.ExtraToppings.Select(t => t.ToppingId).SequenceEqual(toppingIds.OrderBy(id => id)));
+            item.ToppingIds.OrderBy(id => id).SequenceEqual(toppingIds.OrderBy(id => id)));
 
         if (itemToUpdate != null)
         {
@@ -101,18 +108,19 @@ public class CartService(AppDbContext dbContext, ILogger<CartService> logger, IC
             else
             {
                 itemToUpdate.Quantity = quantity;
+
+                var product = await dbContext.Products.FindAsync(productId);
+                if (product == null)
+                {
+                    throw new InvalidOperationException($"Product with id {productId} not found.");
+                }
+                var existingToppings = await dbContext.Toppings
+                    .Where(t => toppingIds.Contains(t.Id))
+                    .ToListAsync();
+                itemToUpdate.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * itemToUpdate.Quantity;
             }
 
-            var product = await dbContext.Products.FindAsync(productId);
-            if (product == null)
-            {
-                throw new InvalidOperationException($"Product with id {productId} not found.");
-            }
-            var existingToppings = await dbContext.Toppings
-                .Where(t => toppingIds.Contains(t.Id))
-                .ToListAsync();
-            itemToUpdate.TotalPrice = (product.BasePrice + existingToppings.Sum(t => t.Price)) * itemToUpdate.Quantity;
-
+            cart.TotalPrice = cart.Items.Sum(i => i.TotalPrice);
             await cacheService.SetAsync($"cart:{sessionId}", cart);
         }
     }

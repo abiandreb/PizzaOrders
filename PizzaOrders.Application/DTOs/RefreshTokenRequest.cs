@@ -1,7 +1,12 @@
-﻿namespace PizzaOrders.Application.DTOs;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PizzaOrders.Application.DTOs;
 
 public class RefreshTokenRequest
 {
-    public string Token { get; set; }
-    public string RefreshToken { get; set; }
+    [Required]
+    public string Token { get; set; } = string.Empty;
+
+    [Required]
+    public string RefreshToken { get; set; } = string.Empty;
 }

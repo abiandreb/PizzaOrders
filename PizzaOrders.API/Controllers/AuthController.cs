@@ -12,6 +12,11 @@ public class AuthController(IAuthService authService)
     [HttpPost("register-user")]
     public async Task<IActionResult> Register([FromBody] RegisterUserRequest payload)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var result = await authService.Register(payload);
@@ -42,12 +47,17 @@ public class AuthController(IAuthService authService)
     [HttpPost("refresh-token")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest payload)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
         try
         {
             var result = await authService.VerifyAndGenerateTokenAsync(payload);
-            
+
             if (result is null) return BadRequest("Invalid tokens");
-            
+
             return Ok(result);
         }
         catch (InvalidOperationException ex)
