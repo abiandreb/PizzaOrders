@@ -150,16 +150,16 @@ Topping CRUD ☐
 
 Price editing UI ☐
 
-Frontend Steps (Angular)
+Frontend Steps (React + TypeScript + Tailwind)
 Phase A — Core Setup
 
-Create Angular project ✔
+Create React project ✔
 
-Add HttpClient module ✔
+Add API client with axios ✔
 
-Create CartApiService for backend communication ✔
+Create AuthContext and useAuth hook ✔
 
-Store sessionId in localStorage or cookie ✔
+Store sessionId in localStorage ✔
 
 Phase B — Product Listing Page
 
@@ -167,43 +167,117 @@ Fetch products by type ✔
 
 Render cards ✔
 
-Add “Add to Cart” button ✔
-
-Show available sizes and toppings ☐
+Add "Add to Cart" button ✔
 
 Phase C — Cart Page
 
-Load cart using sessionId
+Load cart using sessionId ✔
 
-Modify quantities
+Modify quantities ✔
 
-Add/remove toppings
+Remove items ✔
 
-Remove items
-
-Display totals (calculated by backend)
+Display totals (calculated by backend) ✔
 
 Phase D — Checkout UI
 
-Trigger POST /checkout/{sessionId}
+Trigger POST /checkout/{sessionId} ✔
 
-Display confirmation page with final total
-
-Redirect to payment
+Display confirmation page with final total ✔
 
 Phase E — Payment Stub Page
 
-Call payment endpoint
+Call payment endpoint ✔
 
-Show “Order Paid” summary
+Show "Order Paid" summary ✔
 
-Phase F — (Optional) Admin Panel
+Phase F — Admin Panel
 
-Product editor
+Product editor ✔
 
-Topping editor
+Topping editor ✔
 
-Price updates
+Price updates ✔
+
+## Product Image Storage (Azurite)
+
+### Overview
+Product images are stored in Azure Blob Storage (using Azurite for local development). Each product can have three image variants:
+- **Thumbnail** (150x150): For product listings and small previews
+- **Medium** (500x500): For product detail pages
+- **Full** (original size): High-quality original image
+
+### Architecture
+
+**Application Layer:**
+- `IImageStorageService`: Interface for image storage operations
+- `ProductImageUrls`: Record type containing URLs for all three image sizes
+- Image upload/download DTOs
+
+**Domain Layer:**
+- `ProductImage`: Value object representing image URLs (owned entity)
+- Updated `ProductEntity` with `ProductImage` property
+
+**Infrastructure Layer:**
+- `AzuriteImageStorageService`: Implementation using Azure.Storage.Blobs and SixLabors.ImageSharp
+- Automatic image resizing and optimization
+- JPEG compression with quality settings (85 for resized, 90 for full)
+
+### API Endpoints
+
+**POST /api/ProductImage/upload/{productId}** (Admin only)
+- Uploads an image and creates all three variants
+- Validates file type (JPEG, PNG, WebP) and size (max 10MB)
+- Returns URLs for all three sizes
+
+**GET /api/ProductImage/{productId}**
+- Retrieves image URLs for a product
+
+**DELETE /api/ProductImage/{productId}** (Admin only)
+- Deletes all image variants for a product from blob storage
+- Clears image URLs from database
+
+**GET /api/ProductImage/download?blobName={name}**
+- Downloads a specific image by blob name (for debugging)
+
+### Storage Structure
+
+Images are organized in blob storage by product ID:
+```
+product-images/
+  ├── {productId}/
+  │   ├── thumbnail.jpg
+  │   ├── medium.jpg
+  │   └── full.jpg
+```
+
+### Configuration
+
+**appsettings.Development.json:**
+```json
+{
+  "ConnectionStrings": {
+    "AzuriteStorage": "DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;..."
+  },
+  "AzuriteStorage": {
+    "ContainerName": "product-images"
+  }
+}
+```
+
+### Local Development
+
+1. Start Azurite:
+   ```bash
+   azurite --silent --location c:\azurite --debug c:\azurite\debug.log
+   ```
+2. The service automatically creates the `product-images` container on startup
+3. Container has public blob access for easy image retrieval
+
+### Dependencies
+
+- **Azure.Storage.Blobs** (12.24.0): Azure Blob Storage SDK
+- **SixLabors.ImageSharp** (3.1.6): Image processing and resizing
 
 ## Progress Tracker
 - [x] Phase 0: Infrastructure setup
@@ -215,7 +289,19 @@ Price updates
   - [x] Cart DTOs
 - [x] Phase 2: Checkout - COMPLETED
 - [x] Phase 3: Payment Stub - COMPLETED
-- [x] Phase 4: Admin Panel (Optional) - COMPLETED
+- [x] Phase 4: Admin Panel (Backend) - COMPLETED
   - [x] Product CRUD
   - [x] Topping CRUD
-  - [x] Price editing UI
+  - [x] Price editing API
+- [x] Phase 5: Frontend (React) - COMPLETED
+  - [x] Auth (Login/Register)
+  - [x] Product listing
+  - [x] Shopping cart
+  - [x] Checkout flow
+  - [x] Admin panel UI
+- [x] Phase 6: Product Image Storage - COMPLETED
+  - [x] Azurite integration
+  - [x] Multi-size image support (thumbnail, medium, full)
+  - [x] Image upload/download/delete endpoints
+  - [x] ProductImage value object
+  - [x] Database schema updates

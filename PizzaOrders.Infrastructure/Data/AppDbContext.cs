@@ -83,7 +83,12 @@ public class AppDbContext : IdentityDbContext<UserEntity, RoleEntity, int,
             .HasConversion(
                 v => JsonConvert.SerializeObject(v),
                 v => JsonConvert.DeserializeObject<ProductProperties>(v));
-        
+
+        // Configure ProductImage as owned entity
+        modelBuilder
+            .Entity<ProductEntity>()
+            .OwnsOne(p => p.ProductImage);
+
         modelBuilder.SeedDomainData();
     }
 }

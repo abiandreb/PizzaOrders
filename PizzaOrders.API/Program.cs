@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
+using PizzaOrders.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,8 @@ builder.Services.AddAppContext(builder.Configuration);
 
 builder.Services.AddApplicationServices();
 
+builder.Services.AddStorageServices();
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? throw new InvalidOperationException("Redis connection string not found.");
@@ -27,12 +30,13 @@ builder.Services.AddStackExchangeRedisCache(options =>
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAngular",
+    options.AddPolicy("AllowFrontend",
         policy => policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("http://localhost:3000", "http://localhost:4200")
             .AllowAnyHeader()
-            .AllowAnyMethod());
-    
+            .AllowAnyMethod()
+            .AllowCredentials());
+
     options.AddPolicy("AllowAll", policy =>
     {
         policy
@@ -50,11 +54,11 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.UseCors("AllowAll");
+    app.UseCors("AllowFrontend");
 }
 else
 {
-    app.UseCors();
+    app.UseCors("AllowFrontend");
 }
 
 app.UseExceptionHandler();
