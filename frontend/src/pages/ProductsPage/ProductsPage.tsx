@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import { Layout } from '../../components/common/Layout';
+import { Header } from '../../components/common/Header';
+import { Footer } from '../../components/common/Footer';
 import { ProductCard } from '../../components/products/ProductCard';
+import { ProductModal } from '../../components/products/ProductModal';
+import { CartSidebar } from '../../components/common/CartSidebar';
 import type { Product } from '../../types';
 import { ProductType } from '../../types';
 import { api } from '../../services/api';
-import { useCart } from '../../hooks/useCart';
 
 export const ProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedType, setSelectedType] = useState<ProductType>(ProductType.Pizza);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { addToCart } = useCart();
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     loadProducts();
@@ -33,75 +35,98 @@ export const ProductsPage: React.FC = () => {
     }
   };
 
-  const handleAddToCart = async (productId: number, quantity: number, toppingIds: number[]) => {
-    try {
-      await addToCart({ productId, quantity, toppingIds });
-      toast.success('Item added to cart!');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Failed to add item to cart');
+  const handleProductSelect = (product: Product) => {
+    setSelectedProduct(product);
+  };
+
+  const getCategoryTitle = () => {
+    switch (selectedType) {
+      case ProductType.Pizza:
+        return 'Our Pizzas';
+      case ProductType.Drink:
+        return 'Refreshing Drinks';
+      case ProductType.Dessert:
+        return 'Sweet Desserts';
+      default:
+        return 'Our Menu';
+    }
+  };
+
+  const getCategoryDescription = () => {
+    switch (selectedType) {
+      case ProductType.Pizza:
+        return 'Hand-crafted pizzas made with fresh ingredients and baked to perfection';
+      case ProductType.Drink:
+        return 'Cool off with our selection of refreshing beverages';
+      case ProductType.Dessert:
+        return 'End your meal on a sweet note with our delicious desserts';
+      default:
+        return '';
     }
   };
 
   return (
-    <Layout>
-      <div>
-        <h1 className="text-4xl font-bold mb-6">Our Menu</h1>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Header selectedType={selectedType} onTypeChange={setSelectedType} />
 
-        <div className="flex gap-4 mb-8">
-          <button
-            onClick={() => setSelectedType(ProductType.Pizza)}
-            className={`px-6 py-2 rounded-lg font-semibold ${
-              selectedType === ProductType.Pizza
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Pizzas
-          </button>
-          <button
-            onClick={() => setSelectedType(ProductType.Drink)}
-            className={`px-6 py-2 rounded-lg font-semibold ${
-              selectedType === ProductType.Drink
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Drinks
-          </button>
-          <button
-            onClick={() => setSelectedType(ProductType.Dessert)}
-            className={`px-6 py-2 rounded-lg font-semibold ${
-              selectedType === ProductType.Dessert
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-            }`}
-          >
-            Desserts
-          </button>
+      <main className="flex-grow">
+        {/* Page Header */}
+        <div className="bg-white border-b border-gray-100">
+          <div className="max-w-7xl mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {getCategoryTitle()}
+            </h1>
+            <p className="text-gray-500">
+              {getCategoryDescription()}
+            </p>
+          </div>
         </div>
 
-        {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-            {error}
-          </div>
-        )}
+        {/* Products Section */}
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
+              {error}
+            </div>
+          )}
 
-        {loading ? (
-          <div className="text-center py-12">
-            <div className="text-xl">Loading products...</div>
-          </div>
-        ) : products.length === 0 ? (
-          <div className="text-center py-12">
-            <div className="text-xl text-gray-500">No products available</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} onAddToCart={handleAddToCart} />
-            ))}
-          </div>
-        )}
-      </div>
-    </Layout>
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-16">
+              <div className="w-12 h-12 border-4 border-dominos-blue border-t-transparent rounded-full animate-spin mb-4"></div>
+              <p className="text-gray-500">Loading delicious options...</p>
+            </div>
+          ) : products.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="text-6xl mb-4">
+                {selectedType === ProductType.Pizza ? '🍕' : selectedType === ProductType.Drink ? '🥤' : '🍰'}
+              </div>
+              <h2 className="text-xl font-semibold text-gray-700 mb-2">No products available</h2>
+              <p className="text-gray-500">Check back later for new items!</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {products.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onSelect={handleProductSelect}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </main>
+
+      <Footer />
+      <CartSidebar />
+
+      {/* Product Modal */}
+      {selectedProduct && (
+        <ProductModal
+          product={selectedProduct}
+          onClose={() => setSelectedProduct(null)}
+        />
+      )}
+    </div>
   );
 };

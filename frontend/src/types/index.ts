@@ -16,6 +16,12 @@ export interface RegisterRequest {
   lastName: string;
 }
 
+export interface ProductImage {
+  thumbnailUrl?: string;
+  mediumUrl?: string;
+  fullUrl?: string;
+}
+
 export interface Product {
   id: number;
   name: string;
@@ -24,6 +30,7 @@ export interface Product {
   hasToppings: boolean;
   productType: ProductType;
   imageUrl?: string;
+  productImage?: ProductImage;
   properties?: ProductProperties;
 }
 
@@ -123,4 +130,28 @@ export interface UpdateToppingRequest extends CreateToppingRequest {
 export interface User {
   email: string;
   roles: string[];
+}
+
+// Admin Order Management Types
+export interface OrderAdminDto {
+  id: number;
+  userId?: number;
+  userEmail?: string;
+  totalPrice: number;
+  status: string;
+  createdAt: string;
+  updatedAt?: string;
+  items: OrderItemAdminDto[];
+}
+
+export interface OrderItemAdminDto {
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+}
+
+export interface UpdateOrderStatusRequest {
+  status: string;
 }

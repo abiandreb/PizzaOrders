@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -16,59 +16,64 @@ namespace PizzaOrders.Application.Extensions;
 
 public static class ServicesExtensions
 {
-    extension(IServiceCollection services)
+    public static IServiceCollection AddAppContext(this IServiceCollection services, IConfiguration configuration)
     {
-        public void AddAppContext(IConfiguration configuration)
+        services.AddDbContext<AppDbContext>(options =>
+            options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+
+        services.AddIdentity<UserEntity, RoleEntity>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
+        return services;
+    }
+
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
+    {
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ICacheService, RedisService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICheckoutService, CheckoutService>();
+        services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<IProductManagementService, ProductManagementService>();
+        services.AddScoped<IToppingManagementService, ToppingManagementService>();
+        services.AddScoped<IOrderManagementService, OrderManagementService>();
+        services.AddScoped<IImageStorageService, AzuriteImageStorageService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddIdentityServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        var tokenValidationParameters = new TokenValidationParameters
         {
-            services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.ASCII.GetBytes(configuration["JWT:Secret"]
+                                        ?? throw new InvalidOperationException("JWT:Secret configuration is missing"))),
+            ValidateIssuer = true,
+            ValidIssuer = configuration["JWT:Issuer"],
+            ValidateAudience = true,
+            ValidAudience = configuration["JWT:Audience"],
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
 
-            services.AddIdentity<UserEntity, RoleEntity>()
-                .AddEntityFrameworkStores<AppDbContext>()
-                .AddDefaultTokenProviders();
-        }
+        services.AddSingleton(tokenValidationParameters);
 
-        public void AddApplicationServices()
+        services.AddAuthentication(options =>
         {
-            services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IProductService, ProductService>();
-            services.AddScoped<ICacheService, RedisService>();
-            services.AddScoped<ICartService, CartService>();
-            services.AddScoped<ICheckoutService, CheckoutService>();
-            services.AddScoped<IPaymentService, PaymentService>();
-            services.AddScoped<IProductManagementService, ProductManagementService>();
-            services.AddScoped<IToppingManagementService, ToppingManagementService>();
-            services.AddScoped<IImageStorageService, AzuriteImageStorageService>();
-        }
-
-        public void AddIdentityServices(IConfiguration configuration)
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(options =>
         {
-            var tokenValidationParameters = new TokenValidationParameters()
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.ASCII.GetBytes(configuration["JWT:Secret"] 
-                                            ?? throw new InvalidOperationException())),
-                ValidateIssuer = true,
-                ValidIssuer = configuration["JWT:Issuer"],
-                ValidateAudience = true,
-                ValidAudience = configuration["JWT:Audience"],
-                ValidateLifetime = true
-            };
+            options.SaveToken = true;
+            options.RequireHttpsMetadata = false;
+            options.TokenValidationParameters = tokenValidationParameters;
+        });
 
-            services.AddSingleton(tokenValidationParameters);
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(options =>
-            {
-                options.SaveToken = true;
-                options.RequireHttpsMetadata = false;
-                options.TokenValidationParameters = tokenValidationParameters;
-            });
-        }
+        return services;
     }
 }

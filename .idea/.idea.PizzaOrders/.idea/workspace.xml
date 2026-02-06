@@ -13,7 +13,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="67d63b34-be46-45f4-a5b4-87881fe4c82b" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/dotnet-test.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/dotnet-test.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PizzaOrders/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/Controllers/AuthController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/Controllers/AuthController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/Controllers/CheckoutController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/Controllers/CheckoutController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/PizzaOrders.API.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/PizzaOrders.API.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.API/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.API/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/AuthLoginRequest.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/AuthLoginRequest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CartRequestDtos.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CartRequestDtos.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CreateProductRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CreateProductRequestDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CreateToppingRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/CreateToppingRequestDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/PaymentRequestDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/PaymentRequestDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/ProductResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/DTOs/ProductResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Extensions/ServicesExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Extensions/ServicesExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Interfaces/IAuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Interfaces/IAuthService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/AuthService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/AuthService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/CheckoutService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/CheckoutService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Application/Services/ProductService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Application/Services/ProductService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Infrastructure/Extensions/SeedExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Infrastructure/Extensions/SeedExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Tests/AuthServiceTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Tests/AuthServiceTests.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.Tests/PizzaOrders.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.Tests/PizzaOrders.Tests.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.sln" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PizzaOrders.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/PizzaOrders.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/common/Footer.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/common/Footer.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/common/Header.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/common/Header.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/common/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/common/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/common/ProtectedRoute.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/common/ProtectedRoute.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/products/ProductCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/products/ProductCard.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useAuth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useAuth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/hooks/useCart.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/hooks/useCart.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/AdminPage/AdminPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CartPage/CartPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/CheckoutPage/CheckoutPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/CheckoutPage/CheckoutPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/pages/ProductsPage/ProductsPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/ProductsPage/ProductsPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/services/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/services/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/types/index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/types/index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/tailwind.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/tailwind.config.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +81,7 @@
 }</component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/78392888e95a4b7c90c6abf02df21723fc0eb7a316153733fd54a524ce2d2f3/DbContext.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bd1d5c50194fea68ff3559c160230b0ab50f5acf4ce3061bffd6d62958e2182/ExceptionDispatchInfo.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$USER_HOME$/AppData/Roaming/NuGet/NuGet.Config" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PizzaOrders.API/Controllers/AuthController.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/PizzaOrders.API/Controllers/CheckoutController.cs" root0="FORCE_HIGHLIGHTING" />
@@ -107,34 +145,34 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    ".NET Launch Settings Profile.PizzaOrders.API: http.executor": "Run",
-    ".NET Launch Settings Profile.PizzaOrders: http.executor": "Run",
-    ".NET Launch Settings Profile.PizzaOrders: https.executor": "Run",
-    "Aspire Host.PizzaOrders.AppHost: http.executor": "Debug",
-    "HTTP Request.PizzaOrders | #1.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "to.speed.mode.migration.done": "true",
-    "ts.external.directory.path": "C:\\Users\\Andrii\\RiderProjects\\PizzaOrders\\frontend\\node_modules\\typescript\\lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;.NET Launch Settings Profile.PizzaOrders.API: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.PizzaOrders: http.executor&quot;: &quot;Run&quot;,
+    &quot;.NET Launch Settings Profile.PizzaOrders: https.executor&quot;: &quot;Run&quot;,
+    &quot;Aspire Host.PizzaOrders.AppHost: http.executor&quot;: &quot;Debug&quot;,
+    &quot;HTTP Request.PizzaOrders | #1.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\Andrii\\RiderProjects\\PizzaOrders\\frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecapUselessUpdatesCounter">
     <option name="suspendCountdown" value="9" />
   </component>
@@ -360,6 +398,9 @@
       <workItem from="1768482223215" duration="56000" />
       <workItem from="1768482302472" duration="2625000" />
       <workItem from="1768488014759" duration="5127000" />
+      <workItem from="1768584079360" duration="2499000" />
+      <workItem from="1770379341541" duration="10244000" />
+      <workItem from="1770404981953" duration="661000" />
     </task>
     <task id="LOCAL-00001" summary="project structure refactor">
       <option name="closed" value="true" />
@@ -667,19 +708,6 @@
           <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
           <option name="timeStamp" value="3" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/PizzaOrders.API/Controllers/ProductController.cs</url>
-          <line>22</line>
-          <properties documentPath="C:\Users\Andrii\RiderProjects\PizzaOrders\PizzaOrders.API\Controllers\ProductController.cs" containingFunctionPresentation="Method 'GetAllProductsByType'">
-            <startOffsets>
-              <option value="662" />
-            </startOffsets>
-            <endOffsets>
-              <option value="682" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <watches-manager>

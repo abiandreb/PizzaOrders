@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/AuthContext';
+import { store } from './store';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { ProductsPage } from './pages/ProductsPage/ProductsPage';
@@ -13,7 +14,7 @@ import { AdminPage } from './pages/AdminPage/AdminPage';
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
+      <Provider store={store}>
         <BrowserRouter>
           <Toaster position="top-right" />
           <Routes>
@@ -33,7 +34,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
-      </AuthProvider>
+      </Provider>
     </ErrorBoundary>
   );
 }

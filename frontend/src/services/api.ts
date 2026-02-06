@@ -15,6 +15,8 @@ import type {
   UpdateProductRequest,
   CreateToppingRequest,
   UpdateToppingRequest,
+  OrderAdminDto,
+  UpdateOrderStatusRequest,
 } from '../types';
 
 const API_BASE_URL = '/api';
@@ -57,19 +59,55 @@ class ApiClient {
               const response = await this.refreshToken(refreshToken);
               localStorage.setItem('token', response.token);
               localStorage.setItem('refreshToken', response.refreshToken);
+
+              // Update Redux store with new tokens
+              const tokenPayload = JSON.parse(atob(response.token.split('.')[1]));
+              const userObj = {
+                email: tokenPayload.email || tokenPayload.sub,
+                roles: tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+                  ? (Array.isArray(tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'])
+                      ? tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+                      : [tokenPayload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']])
+                  : [],
+              };
+
+              // Import store dynamically to avoid circular dependencies
+              import('../store').then(({ store }) => {
+                store.dispatch({
+                  type: 'auth/setCredentials',
+                  payload: {
+                    user: userObj,
+                    token: response.token,
+                    refreshToken: response.refreshToken,
+                  },
+                });
+              });
+
               originalRequest.headers.Authorization = `Bearer ${response.token}`;
               return this.client.request(originalRequest);
             } catch (refreshError) {
+              console.error('Refresh token failed:', refreshError);
               localStorage.removeItem('token');
               localStorage.removeItem('refreshToken');
-              window.location.href = '/login';
+
+              // Clear Redux state
+              import('../store').then(({ store }) => {
+                store.dispatch({ type: 'auth/logout' });
+              });
+
+              // Don't redirect automatically - let ProtectedRoute handle it
               return Promise.reject(refreshError);
             }
           } else {
-            // No tokens available, redirect to login
+            // No tokens available - just clear state, don't redirect
+            console.warn('No refresh token available for 401 response');
             localStorage.removeItem('token');
             localStorage.removeItem('refreshToken');
-            window.location.href = '/login';
+
+            // Clear Redux state
+            import('../store').then(({ store }) => {
+              store.dispatch({ type: 'auth/logout' });
+            });
           }
         }
         return Promise.reject(error);
@@ -94,6 +132,12 @@ class ApiClient {
       refreshToken,
     });
     return response.data;
+  }
+
+  async logout(): Promise<void> {
+    await this.client.post('/auth/logout');
+    localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
   }
 
   // Product endpoints
@@ -138,9 +182,19 @@ class ApiClient {
     await this.client.delete(`/cart/${sessionId}`);
   }
 
-  // Checkout endpoint
+  // Checkout endpoints
   async checkout(sessionId: string, data?: CheckoutRequest): Promise<Order> {
-    const response = await this.client.post<Order>(`/checkout/${sessionId}`, data || {});
+    // Use authenticated endpoint if user is logged in
+    const token = localStorage.getItem('token');
+    const endpoint = token
+      ? `/checkout/${sessionId}`
+      : `/checkout/${sessionId}/guest`;
+    const response = await this.client.post<Order>(endpoint, data || {});
+    return response.data;
+  }
+
+  async guestCheckout(sessionId: string, data?: CheckoutRequest): Promise<Order> {
+    const response = await this.client.post<Order>(`/checkout/${sessionId}/guest`, data || {});
     return response.data;
   }
 
@@ -182,6 +236,28 @@ class ApiClient {
 
   async deleteTopping(id: number): Promise<void> {
     await this.client.delete(`/management/toppings/${id}`);
+  }
+
+  // Admin - Order Management
+  async getAllOrdersForAdmin(status?: string): Promise<OrderAdminDto[]> {
+    const params = status ? `?status=${status}` : '';
+    const response = await this.client.get<OrderAdminDto[]>(`/management/orders${params}`);
+    return response.data;
+  }
+
+  async getOrderByIdForAdmin(id: number): Promise<OrderAdminDto> {
+    const response = await this.client.get<OrderAdminDto>(`/management/orders/${id}`);
+    return response.data;
+  }
+
+  async updateOrderStatus(id: number, data: UpdateOrderStatusRequest): Promise<OrderAdminDto> {
+    const response = await this.client.put<OrderAdminDto>(`/management/orders/${id}/status`, data);
+    return response.data;
+  }
+
+  async getAvailableOrderStatuses(): Promise<string[]> {
+    const response = await this.client.get<string[]>('/management/orders/statuses');
+    return response.data;
   }
 }
 

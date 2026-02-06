@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 
@@ -70,6 +72,21 @@ public class AuthController(IAuthService authService)
         }
     }
     
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (!int.TryParse(userIdClaim, out var userId))
+        {
+            return Unauthorized("Invalid user token");
+        }
+
+        await authService.LogoutAsync(userId);
+        return Ok(new { message = "Logged out successfully" });
+    }
+
     /* TODO:
         GET /confirmEmail
         POST /resendConfirmationEmail

@@ -22,16 +22,22 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
                 HasToppings = x.HasToppings,
                 ProductType = x.ProductType,
                 ImageUrl = x.ImageUrl,
+                ProductImage = x.ProductImage != null ? new ProductImageResponse
+                {
+                    ThumbnailUrl = x.ProductImage.ThumbnailUrl,
+                    MediumUrl = x.ProductImage.MediumUrl,
+                    FullUrl = x.ProductImage.FullUrl
+                } : null,
                 Properties = x.ProductProperties
             })
-            .Where(x => x.ProductType == (ProductType)productType) 
+            .Where(x => x.ProductType == (ProductType)productType)
             .ToListAsync(cancellationToken);
 
         if (products.Count == 0)
         {
             logger.LogInformation("No products found");
         }
-        
+
         return products;
     }
 
@@ -53,6 +59,12 @@ public class ProductService(AppDbContext dbContext, ILogger<ProductService> logg
             HasToppings = product.HasToppings,
             ProductType = product.ProductType,
             ImageUrl = product.ImageUrl,
+            ProductImage = product.ProductImage != null ? new ProductImageResponse
+            {
+                ThumbnailUrl = product.ProductImage.ThumbnailUrl,
+                MediumUrl = product.ProductImage.MediumUrl,
+                FullUrl = product.ProductImage.FullUrl
+            } : null,
             Properties = product.ProductProperties
         };
     }

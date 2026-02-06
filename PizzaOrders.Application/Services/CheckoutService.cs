@@ -1,77 +1,102 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PizzaOrders.Application.DTOs;
 using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Domain.Entities.Orders;
 using PizzaOrders.Infrastructure.Data;
 
-namespace PizzaOrders.Application.Services
-{
-    public class CheckoutService : ICheckoutService
-    {
-        private readonly ICartService _cartService;
-        private readonly AppDbContext _context;
+namespace PizzaOrders.Application.Services;
 
-        public CheckoutService(ICartService cartService, AppDbContext context)
+public class CheckoutService : ICheckoutService
+{
+    private readonly ICartService _cartService;
+    private readonly AppDbContext _context;
+    private readonly ILogger<CheckoutService> _logger;
+
+    public CheckoutService(ICartService cartService, AppDbContext context, ILogger<CheckoutService> logger)
+    {
+        _cartService = cartService;
+        _context = context;
+        _logger = logger;
+    }
+
+    public async Task<OrderDto> ProcessCheckout(Guid sessionId, int? userId = null)
+    {
+        // 1. Get cart from Redis
+        var cart = await _cartService.GetCartAsync(sessionId);
+        if (cart == null || !cart.Items.Any())
         {
-            _cartService = cartService;
-            _context = context;
+            throw new InvalidOperationException("Cart is empty or not found.");
         }
 
-        public async Task<OrderDto> ProcessCheckout(Guid sessionId, int? userId = null)
-        {
-            // 1. Get cart from Redis
-            var cart = await _cartService.GetCartAsync(sessionId);
-            if (cart == null || !cart.Items.Any())
-            {
-                throw new InvalidOperationException("Cart is empty or not found.");
-            }
+        // 2. Batch load all products and toppings upfront (fixes N+1 query problem)
+        var productIds = cart.Items.Select(i => i.ProductId).Distinct().ToList();
+        var allToppingIds = cart.Items
+            .Where(i => i.ToppingIds != null)
+            .SelectMany(i => i.ToppingIds)
+            .Distinct()
+            .ToList();
 
-            // 2. Create a new order
+        var products = await _context.Products
+            .Where(p => productIds.Contains(p.Id))
+            .ToDictionaryAsync(p => p.Id);
+
+        var toppings = await _context.Toppings
+            .Where(t => allToppingIds.Contains(t.Id))
+            .ToDictionaryAsync(t => t.Id);
+
+        // Validate all products exist
+        var missingProducts = productIds.Except(products.Keys).ToList();
+        if (missingProducts.Any())
+        {
+            throw new InvalidOperationException($"Products with IDs {string.Join(", ", missingProducts)} not found.");
+        }
+
+        // Validate all toppings exist
+        var missingToppings = allToppingIds.Except(toppings.Keys).ToList();
+        if (missingToppings.Any())
+        {
+            throw new InvalidOperationException($"Toppings with IDs {string.Join(", ", missingToppings)} not found.");
+        }
+
+        // 3. Use transaction to ensure atomicity
+        await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            // 4. Create a new order
             var order = new OrderEntity
             {
                 Status = OrderStatus.PaymentPending,
                 Items = new List<OrderItemEntity>(),
-                UserId = userId
+                UserId = userId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow
             };
 
             decimal totalOrderPrice = 0;
 
-            // 3. Process each item in the cart
+            // 5. Process each item in the cart
             foreach (var cartItem in cart.Items)
             {
-                var product = await _context.Products
-                    .FirstOrDefaultAsync(p => p.Id == cartItem.ProductId);
-
-                if (product == null)
-                {
-                    throw new InvalidOperationException($"Product with ID {cartItem.ProductId} not found.");
-                }
-
+                var product = products[cartItem.ProductId];
                 decimal itemPrice = product.BasePrice;
                 var orderItemModifiers = new ItemModifiers();
 
-                // 4. Process toppings if any
+                // Process toppings if any
                 if (cartItem.ToppingIds != null && cartItem.ToppingIds.Any())
                 {
-                    var toppings = await _context.Toppings
-                        .Where(t => cartItem.ToppingIds.Contains(t.Id))
-                        .ToListAsync();
+                    var itemToppings = cartItem.ToppingIds
+                        .Select(id => toppings[id])
+                        .ToList();
 
-                    if (toppings.Count != cartItem.ToppingIds.Count)
-                    {
-                        var invalidIds = cartItem.ToppingIds.Except(toppings.Select(t => t.Id)).ToList();
-                        throw new InvalidOperationException($"Toppings with IDs {string.Join(", ", invalidIds)} not found.");
-                    }
+                    itemPrice += itemToppings.Sum(t => t.Price);
 
-                    foreach (var topping in toppings)
-                    {
-                        itemPrice += topping.Price;
-                    }
-
-                    orderItemModifiers.ExtraToppings = toppings.Select(t => new SelectedItemTopping
+                    orderItemModifiers.ExtraToppings = itemToppings.Select(t => new SelectedItemTopping
                     {
                         ToppingId = t.Id,
-                        Price = t.Price
+                        Price = t.Price,
+                        Quantity = 1
                     }).ToList();
                 }
 
@@ -81,7 +106,9 @@ namespace PizzaOrders.Application.Services
                     Quantity = cartItem.Quantity,
                     ItemPrice = itemPrice,
                     TotalPrice = itemPrice * cartItem.Quantity,
-                    ItemModifiers = orderItemModifiers
+                    ItemModifiers = orderItemModifiers,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
                 };
 
                 order.Items.Add(orderItem);
@@ -90,42 +117,53 @@ namespace PizzaOrders.Application.Services
 
             order.TotalPrice = totalOrderPrice;
 
-            // 5. Save the order to the database
+            // 6. Save the order to the database
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            // 6. Clear the cart from Redis
+            // 7. Commit transaction before clearing cart
+            await transaction.CommitAsync();
+
+            // 8. Clear the cart from Redis (outside transaction - Redis is separate)
             await _cartService.ClearCartAsync(sessionId);
 
-            // 7. Map to DTO and return
-            return new OrderDto
-            {
-                OrderId = order.Id,
-                TotalPrice = order.TotalPrice,
-                OrderDate = order.CreatedAt,
-                Status = order.Status.ToString(),
-                Items = order.Items.Select(oi =>
-                {
-                    var product = _context.Products.Find(oi.ProductId);
-                    return new OrderItemDto
-                    {
-                        ProductId = oi.ProductId,
-                        Quantity = oi.Quantity,
-                        UnitPrice = oi.ItemPrice,
-                        ProductName = product?.Name ?? string.Empty,
-                        Modifiers = oi.ItemModifiers.ExtraToppings.Select(m =>
-                        {
-                            var topping = _context.Toppings.Find(m.ToppingId);
-                            return new OrderItemModifierDto()
-                            {
-                                Price = m.Price ?? 0,
-                                ToppingId = m.ToppingId,
-                                ToppingName = topping?.Name ?? string.Empty
-                            };
-                        }).ToList()
-                    };
-                }).ToList()
-            };
+            _logger.LogInformation("Order {OrderId} created successfully for session {SessionId}", order.Id, sessionId);
+
+            // 9. Map to DTO and return (using already-loaded data, no additional queries)
+            return MapToOrderDto(order, products, toppings);
         }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            _logger.LogError(ex, "Failed to process checkout for session {SessionId}", sessionId);
+            throw;
+        }
+    }
+
+    private static OrderDto MapToOrderDto(
+        OrderEntity order,
+        Dictionary<int, Domain.Entities.Products.ProductEntity> products,
+        Dictionary<int, Domain.Entities.Toppings.ToppingEntity> toppings)
+    {
+        return new OrderDto
+        {
+            OrderId = order.Id,
+            TotalPrice = order.TotalPrice,
+            OrderDate = order.CreatedAt,
+            Status = order.Status.ToString(),
+            Items = order.Items.Select(oi => new OrderItemDto
+            {
+                ProductId = oi.ProductId,
+                Quantity = oi.Quantity,
+                UnitPrice = oi.ItemPrice,
+                ProductName = products.TryGetValue(oi.ProductId, out var product) ? product.Name : string.Empty,
+                Modifiers = oi.ItemModifiers?.ExtraToppings?.Select(m => new OrderItemModifierDto
+                {
+                    Price = m.Price ?? 0,
+                    ToppingId = m.ToppingId,
+                    ToppingName = toppings.TryGetValue(m.ToppingId, out var topping) ? topping.Name : string.Empty
+                }).ToList() ?? new List<OrderItemModifierDto>()
+            }).ToList()
+        };
     }
 }

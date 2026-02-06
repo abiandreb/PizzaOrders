@@ -1,12 +1,12 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
 using PizzaOrders.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add Aspire service defaults (OpenTelemetry, health checks, service discovery)
+builder.AddServiceDefaults();
 
 builder.Services.AddProblemDetails();
 
@@ -16,16 +16,21 @@ builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddOpenApi();
 
+// Add database and Identity
 builder.Services.AddAppContext(builder.Configuration);
 
+// Add application services
 builder.Services.AddApplicationServices();
 
+// Add Redis cache
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? throw new InvalidOperationException("Redis connection string not found.");
+    options.Configuration = builder.Configuration.GetConnectionString("Redis")
+        ?? throw new InvalidOperationException("Redis connection string not found.");
     options.InstanceName = "PizzaOrdersRedis";
 });
 
+// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend",
@@ -34,30 +39,23 @@ builder.Services.AddCors(options =>
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials());
-
-    options.AddPolicy("AllowAll", policy =>
-    {
-        policy
-            .AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
 });
 
+// Add JWT authentication
 builder.Services.AddIdentityServices(builder.Configuration);
 
 var app = builder.Build();
+
+// Map Aspire default health check endpoints
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.UseCors("AllowFrontend");
 }
-else
-{
-    app.UseCors("AllowFrontend");
-}
+
+app.UseCors("AllowFrontend");
 
 app.UseExceptionHandler();
 
@@ -69,4 +67,13 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Seed the database in development
+if (app.Environment.IsDevelopment())
+{
+    await app.SeedDatabaseAsync();
+}
+
 app.Run();
+
+// Expose Program class for integration testing
+public partial class Program { }

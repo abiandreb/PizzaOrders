@@ -92,10 +92,11 @@ public class AuthService : IAuthService
 
             var utcExpiryDate =
                 long.Parse(tokenVerification.Claims.First(x => x.Type == JwtRegisteredClaimNames.Exp).Value);
-            var expiryDate = DateTime.UnixEpoch.AddMilliseconds(utcExpiryDate);
+            var expiryDate = DateTime.UnixEpoch.AddSeconds(utcExpiryDate);
 
-            if (expiryDate > DateTime.UtcNow)
-                throw new InvalidOperationException("Token is not expired");
+            // Allow refresh at any time - don't require token to be expired
+            // if (expiryDate > DateTime.UtcNow)
+            //     throw new InvalidOperationException("Token is not expired");
 
             var dbRefreshToken = _context.RefreshTokens.FirstOrDefault(x => x.Token == payload.RefreshToken);
             if (dbRefreshToken is null) return null;
@@ -128,6 +129,19 @@ public class AuthService : IAuthService
         }
     }
     
+    public async Task LogoutAsync(int userId)
+    {
+        var refreshTokens = _context.RefreshTokens
+            .Where(rt => rt.UserId == userId && !rt.IsRevoked);
+
+        foreach (var token in refreshTokens)
+        {
+            token.IsRevoked = true;
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     private async Task<AuthResponse> GenerateJwtToken(UserEntity user, string? existingRefreshToken)
     {
         var claims = new List<Claim>()
@@ -148,7 +162,7 @@ public class AuthService : IAuthService
         var token = new JwtSecurityToken(
             issuer: _configuration["JWT:Issuer"],
             audience: _configuration["JWT:Audience"],
-            expires: DateTime.Now.AddMinutes(5),
+            expires: DateTime.Now.AddHours(1),
             claims: claims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
             );

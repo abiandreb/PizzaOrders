@@ -1,16 +1,44 @@
-﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using PizzaOrders.Domain;
 using PizzaOrders.Domain.Entities.AuthEntities;
 using PizzaOrders.Domain.Entities.Products;
-using PizzaOrders.Domain.Entities.Toppings; 
+using PizzaOrders.Domain.Entities.Toppings;
 using PizzaOrders.Domain.Entities.Orders;
 using PizzaOrders.Domain.Entities.Payment;
+using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Infrastructure.Extensions;
 
 public static class SeedExtensions
 {
+    /// <summary>
+    /// Applies pending migrations and ensures database is created.
+    /// Call this in development to automatically set up the database.
+    /// </summary>
+    public static async Task SeedDatabaseAsync(this IHost app)
+    {
+        using var scope = app.Services.CreateScope();
+        var services = scope.ServiceProvider;
+        var logger = services.GetRequiredService<ILogger<AppDbContext>>();
+
+        try
+        {
+            var context = services.GetRequiredService<AppDbContext>();
+
+            logger.LogInformation("Applying database migrations...");
+            await context.Database.MigrateAsync();
+            logger.LogInformation("Database migrations applied successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An error occurred while migrating the database.");
+            throw;
+        }
+    }
+
     public static void SeedDomainData(this ModelBuilder modelBuilder)
     {
         var adminRole = new RoleEntity { Id = 1, Name = "Admin", NormalizedName = "ADMIN" };

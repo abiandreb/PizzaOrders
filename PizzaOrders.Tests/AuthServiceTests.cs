@@ -17,13 +17,12 @@ namespace PizzaOrders.Tests
     [TestFixture]
     public class AuthServiceTests
     {
-        private Mock<IConfiguration> _configurationMock;
-        private Mock<UserManager<UserEntity>> _userManagerMock;
-        private Mock<RoleManager<RoleEntity>> _roleManagerMock;
-        private AuthService _authService;
+        private Mock<IConfiguration> _configurationMock = null!;
+        private Mock<UserManager<UserEntity>> _userManagerMock = null!;
+        private AuthService _authService = null!;
 
-        private Mock<AppDbContext> _dbContextMock;
-        private Mock<TokenValidationParameters> _tokenValidationParametersMock;
+        private Mock<AppDbContext> _dbContextMock = null!;
+        private Mock<TokenValidationParameters> _tokenValidationParametersMock = null!;
 
         [SetUp]
         public void Setup()
@@ -31,7 +30,8 @@ namespace PizzaOrders.Tests
             _configurationMock = new Mock<IConfiguration>();
 
             var userStoreMock = new Mock<IUserStore<UserEntity>>();
-            _userManagerMock = new Mock<UserManager<UserEntity>>(userStoreMock.Object, null, null, null, null, null, null, null, null);
+            _userManagerMock = new Mock<UserManager<UserEntity>>(
+                userStoreMock.Object, null!, null!, null!, null!, null!, null!, null!, null!);
 
             var options = new DbContextOptionsBuilder<AppDbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())

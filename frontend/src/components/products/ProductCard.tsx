@@ -1,55 +1,101 @@
-import React, { useState } from 'react';
+import React from 'react';
 import type { Product } from '../../types';
+import { Badge } from '../common/Badge';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: (productId: number, quantity: number, toppingIds: number[]) => void;
+  onSelect: (product: Product) => void;
 }
 
-export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
-  const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(false);
+export const ProductCard: React.FC<ProductCardProps> = ({ product, onSelect }) => {
+  // Determine which badges to show
+  const getBadges = () => {
+    const badges: Array<'new' | 'vege' | 'hot' | 'bestseller' | 'customizable'> = [];
 
-  const handleAddToCart = async () => {
-    setLoading(true);
-    try {
-      await onAddToCart(product.id, quantity, []);
-    } finally {
-      setLoading(false);
+    // Check description for keywords to determine badges
+    const desc = (product.description || '').toLowerCase();
+    if (desc.includes('vege') || desc.includes('vegetarian')) {
+      badges.push('vege');
     }
+    if (desc.includes('spicy') || desc.includes('hot') || desc.includes('jalapeno')) {
+      badges.push('hot');
+    }
+    if (product.hasToppings) {
+      badges.push('customizable');
+    }
+
+    return badges;
   };
 
+  const badges = getBadges();
+
+  // Use productImage.mediumUrl if available, fallback to imageUrl
+  const imageUrl = product.productImage?.mediumUrl || product.imageUrl;
+
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow">
-      {product.imageUrl && (
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          className="w-full h-48 object-cover rounded-md mb-4"
-        />
-      )}
-      <h3 className="text-xl font-bold mb-2">{product.name}</h3>
-      {product.description && <p className="text-gray-600 mb-3">{product.description}</p>}
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-2xl font-bold text-blue-600">${product.basePrice.toFixed(2)}</span>
-        {product.hasToppings && (
-          <span className="text-sm text-green-600">Customizable</span>
-        )}
+    <div
+      onClick={() => onSelect(product)}
+      className="flex bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow border border-gray-100 cursor-pointer h-[280px]"
+    >
+      {/* Image Section - 40% width */}
+      <div className="w-2/5 relative bg-gray-100 flex-shrink-0 h-full overflow-hidden rounded-l-xl">
+        {imageUrl ? (
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              // Hide broken image and show fallback
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.nextElementSibling?.classList.remove('hidden');
+            }}
+          />
+        ) : null}
+        <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 absolute inset-0 ${imageUrl ? 'hidden' : ''}`}>
+          <span className="text-6xl opacity-50">
+            {product.productType === 0 ? '🍕' : product.productType === 1 ? '🥤' : '🍰'}
+          </span>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-          className="border rounded px-2 py-1 w-16 text-center"
-        />
+
+      {/* Content Section - 60% width */}
+      <div className="w-3/5 p-4 flex flex-col h-full">
+        {/* Product Name */}
+        <h3 className="font-bold text-lg text-gray-900 mb-1 line-clamp-1">
+          {product.name}
+        </h3>
+
+        {/* Price */}
+        <p className="text-dominos-blue font-bold text-lg mb-1">
+          from ${product.basePrice.toFixed(2)}
+        </p>
+
+        {/* Description */}
+        <p className="text-gray-500 text-sm line-clamp-2 mb-2">
+          {product.description || 'Delicious treat waiting for you!'}
+        </p>
+
+        {/* Badges */}
+        {badges.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {badges.map((badge) => (
+              <Badge key={badge} type={badge} />
+            ))}
+          </div>
+        )}
+
+        {/* Spacer to push button to bottom */}
+        <div className="flex-grow"></div>
+
+        {/* Select Button */}
         <button
-          onClick={handleAddToCart}
-          disabled={loading}
-          className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded disabled:opacity-50"
+          onClick={(e) => {
+            e.stopPropagation();
+            onSelect(product);
+          }}
+          className="w-full py-3 bg-[#0066CC] text-white rounded-lg font-semibold hover:bg-[#004C99] transition-colors"
         >
-          {loading ? 'Adding...' : 'Add to Cart'}
+          Select
         </button>
       </div>
     </div>

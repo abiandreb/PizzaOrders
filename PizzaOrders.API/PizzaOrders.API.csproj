@@ -5,7 +5,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <LangVersion>14</LangVersion>
-        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <ContainerRepository>pizzaorders-api</ContainerRepository>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,6 +25,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PizzaOrders.Application\PizzaOrders.Application.csproj" />
       <ProjectReference Include="..\PizzaOrders.Infrastructure\PizzaOrders.Infrastructure.csproj" />
+      <ProjectReference Include="..\PizzaOrders.ServiceDefaults\PizzaOrders.ServiceDefaults.csproj" />
     </ItemGroup>
 
 </Project>
