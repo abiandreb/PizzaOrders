@@ -9,6 +9,11 @@ export default defineConfig({
     headless: true,
     screenshot: 'only-on-failure',
   },
+  webServer: {
+    command: 'npx vite preview --port 3000',
+    port: 3000,
+    reuseExistingServer: !process.env.CI,
+  },
   projects: [
     {
       name: 'chromium',
