@@ -30,6 +30,7 @@ Thumbs.db
 # Claude / AI tooling
 .claude/
 .playwright-mcp/
+CLAUDE.md
 
 # Secrets
 appsettings.Development.json
