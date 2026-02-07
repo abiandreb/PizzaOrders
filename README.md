@@ -174,7 +174,7 @@ dotnet test --filter "Category=Integration"
 # All tests
 dotnet test
 
-# Playwright E2E tests
+# Playwright E2E tests (requires full stack running locally)
 cd frontend && npx playwright test
 ```
 
@@ -196,8 +196,10 @@ cd frontend && npx playwright test
 GitHub Actions pipeline with three parallel jobs:
 
 1. **Unit Tests** -- Build, restore, run unit tests, upload coverage
-2. **Integration Tests** -- Same + Testcontainers with Docker-in-Docker
-3. **Playwright Tests** -- TypeScript check, build frontend, run E2E tests
+2. **Integration Tests** -- Same + Testcontainers (SQL Server + Redis)
+3. **Frontend Checks** -- TypeScript check, production build validation
+
+Playwright E2E tests run locally against the full stack (backend + SQL Server + Redis + Azurite).
 
 ## Project Structure
 
