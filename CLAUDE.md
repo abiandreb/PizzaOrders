@@ -121,7 +121,8 @@ Focus on **correct flow**, not UI beauty.
     - Restore
     - Build
     - Run unit tests
-    - Run integration tests
+    - Frontend TypeScript check + build
+- **Integration tests and Playwright E2E tests run locally only** (they require full infrastructure: MSSQL, Azurite, Aspire)
 - No deployment required (yet)
 
 ---
