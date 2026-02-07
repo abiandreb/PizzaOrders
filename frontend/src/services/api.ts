@@ -11,6 +11,7 @@ import type {
   UpdateCartRequest,
   CheckoutRequest,
   Order,
+  OrderDetail,
   CreateProductRequest,
   UpdateProductRequest,
   CreateToppingRequest,
@@ -195,6 +196,17 @@ class ApiClient {
 
   async guestCheckout(sessionId: string, data?: CheckoutRequest): Promise<Order> {
     const response = await this.client.post<Order>(`/checkout/${sessionId}/guest`, data || {});
+    return response.data;
+  }
+
+  // User Orders
+  async getMyOrders(): Promise<Order[]> {
+    const response = await this.client.get<Order[]>('/orders');
+    return response.data;
+  }
+
+  async getMyOrderById(id: number): Promise<OrderDetail> {
+    const response = await this.client.get<OrderDetail>(`/orders/${id}`);
     return response.data;
   }
 

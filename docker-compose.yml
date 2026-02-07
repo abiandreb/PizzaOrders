@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: pizzaorders-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=PizzaOrders123!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "PizzaOrders123!" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    networks:
+      - pizzaorders-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: pizzaorders-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pizzaorders-network
+
+  # Azurite (Azure Storage Emulator)
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: pizzaorders-azurite
+    ports:
+      - "10000:10000"  # Blob service
+      - "10001:10001"  # Queue service
+      - "10002:10002"  # Table service
+    volumes:
+      - azurite-data:/data
+    command: azurite --blobHost 0.0.0.0 --queueHost 0.0.0.0 --tableHost 0.0.0.0 --location /data --debug /data/debug.log
+    networks:
+      - pizzaorders-network
+
+  # PizzaOrders API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pizzaorders-api
+    ports:
+      - "5062:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=PizzaOrders;User Id=sa;Password=PizzaOrders123!;TrustServerCertificate=True;
+      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__AzuriteStorage=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+      - JWT__Secret=PizzaOrdersSecretKeyForJWTAuthenticationMustBeAtLeast32BytesLong!
+      - JWT__Issuer=https://localhost:7258
+      - JWT__Audience=PizzaOrdersApp
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      azurite:
+        condition: service_started
+    networks:
+      - pizzaorders-network
+
+  # Frontend (optional - for full stack development)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: pizzaorders-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - pizzaorders-network
+    profiles:
+      - frontend
+
+volumes:
+  sqlserver-data:
+  redis-data:
+  azurite-data:
+
+networks:
+  pizzaorders-network:
+    driver: bridge

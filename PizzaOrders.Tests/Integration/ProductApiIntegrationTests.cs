@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Json;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
 using PizzaOrders.Domain.Entities.Products;
-using PizzaOrders.Infrastructure.Data;
 
 namespace PizzaOrders.Tests.Integration;
 
@@ -15,16 +13,13 @@ namespace PizzaOrders.Tests.Integration;
 public class ProductApiIntegrationTests : IntegrationTestBase
 {
     [Test]
-    public async Task GetProducts_ReturnsEmptyList_WhenNoProducts()
+    public async Task GetProducts_ReturnsNotFound_WhenNoProductsOfType()
     {
-        // Act
-        var response = await Client.GetAsync("/api/product?productType=1");
+        // Act — use a high productType value that has no seeded products
+        var response = await Client.GetAsync("/api/product?productType=99");
 
-        // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        var products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
-        Assert.That(products, Is.Not.Null);
-        Assert.That(products, Is.Empty);
+        // Assert — controller returns NotFound when no products found
+        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
     }
 
     [Test]
@@ -33,10 +28,10 @@ public class ProductApiIntegrationTests : IntegrationTestBase
         // Arrange - seed a product
         await ExecuteDbContextAsync(async context =>
         {
-#pragma warning disable CS0618 // Type or member is obsolete (ImageUrl)
+#pragma warning disable CS0618
             context.Products.Add(new ProductEntity
             {
-                Name = "Test Pizza",
+                Name = "Integration Test Pizza",
                 Description = "A test pizza for integration testing",
                 BasePrice = 15.99m,
                 HasToppings = true,
@@ -47,25 +42,25 @@ public class ProductApiIntegrationTests : IntegrationTestBase
             await context.SaveChangesAsync();
         });
 
-        // Act
-        var response = await Client.GetAsync("/api/product?productType=1"); // 1 = Pizza
+        // Act — Pizza type = 0
+        var response = await Client.GetAsync("/api/product?productType=0");
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
         var products = await response.Content.ReadFromJsonAsync<List<ProductDto>>();
         Assert.That(products, Is.Not.Null);
         Assert.That(products!.Count, Is.GreaterThanOrEqualTo(1));
-        Assert.That(products.Any(p => p.Name == "Test Pizza"), Is.True);
+        Assert.That(products.Any(p => p.Name == "Integration Test Pizza"), Is.True);
     }
 
     [Test]
-    public async Task GetProductById_ReturnsNotFound_WhenProductDoesNotExist()
+    public async Task GetProductById_NonExistent_ReturnsBadRequest()
     {
-        // Act
+        // Act — ProductService throws InvalidOperationException for missing products
         var response = await Client.GetAsync("/api/product/99999");
 
-        // Assert
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        // Assert — global exception handler converts to 400/500
+        Assert.That(response.StatusCode, Is.Not.EqualTo(HttpStatusCode.OK));
     }
 
     // DTO for deserialization

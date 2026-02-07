@@ -1,5 +1,7 @@
+using PizzaOrders.API.Hubs;
 using PizzaOrders.API.Handlers;
 using PizzaOrders.Application.Extensions;
+using PizzaOrders.Application.Interfaces;
 using PizzaOrders.Infrastructure.Extensions;
 using Scalar.AspNetCore;
 
@@ -44,6 +46,10 @@ builder.Services.AddCors(options =>
 // Add JWT authentication
 builder.Services.AddIdentityServices(builder.Configuration);
 
+// Add SignalR
+builder.Services.AddSignalR();
+builder.Services.AddScoped<IOrderNotificationService, SignalROrderNotificationService>();
+
 var app = builder.Build();
 
 // Map Aspire default health check endpoints
@@ -66,6 +72,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<OrderHub>("/hubs/orders");
 
 // Seed the database in development
 if (app.Environment.IsDevelopment())

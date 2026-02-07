@@ -10,12 +10,14 @@ namespace PizzaOrders.Application.Services;
 public class CheckoutService : ICheckoutService
 {
     private readonly ICartService _cartService;
+    private readonly IPaymentService _paymentService;
     private readonly AppDbContext _context;
     private readonly ILogger<CheckoutService> _logger;
 
-    public CheckoutService(ICartService cartService, AppDbContext context, ILogger<CheckoutService> logger)
+    public CheckoutService(ICartService cartService, IPaymentService paymentService, AppDbContext context, ILogger<CheckoutService> logger)
     {
         _cartService = cartService;
+        _paymentService = paymentService;
         _context = context;
         _logger = logger;
     }
@@ -124,12 +126,21 @@ public class CheckoutService : ICheckoutService
             // 7. Commit transaction before clearing cart
             await transaction.CommitAsync();
 
-            // 8. Clear the cart from Redis (outside transaction - Redis is separate)
+            // 8. Auto-process payment (mocked - always succeeds)
+            await _paymentService.ProcessPayment(new PaymentRequestDto
+            {
+                OrderId = order.Id,
+                Amount = order.TotalPrice
+            });
+            // Refresh status after payment
+            order.Status = OrderStatus.Paid;
+
+            // 9. Clear the cart from Redis (outside transaction - Redis is separate)
             await _cartService.ClearCartAsync(sessionId);
 
-            _logger.LogInformation("Order {OrderId} created successfully for session {SessionId}", order.Id, sessionId);
+            _logger.LogInformation("Order {OrderId} created and paid successfully for session {SessionId}", order.Id, sessionId);
 
-            // 9. Map to DTO and return (using already-loaded data, no additional queries)
+            // 10. Map to DTO and return (using already-loaded data, no additional queries)
             return MapToOrderDto(order, products, toppings);
         }
         catch (Exception ex)

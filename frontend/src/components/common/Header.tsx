@@ -53,6 +53,14 @@ export const Header: React.FC<HeaderProps> = ({ selectedType, onTypeChange }) =>
                 >
                   Menu
                 </Link>
+                {isAuthenticated && (
+                  <Link
+                    to="/orders"
+                    className="text-sm font-semibold text-gray-700 hover:text-[#0066CC] transition-colors"
+                  >
+                    My Orders
+                  </Link>
+                )}
                 {isAdmin && (
                   <Link
                     to="/admin"
@@ -169,6 +177,15 @@ export const Header: React.FC<HeaderProps> = ({ selectedType, onTypeChange }) =>
               >
                 Menu
               </Link>
+              {isAuthenticated && (
+                <Link
+                  to="/orders"
+                  className="block px-4 py-2 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Orders
+                </Link>
+              )}
               {isAdmin && (
                 <Link
                   to="/admin"

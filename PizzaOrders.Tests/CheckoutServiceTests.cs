@@ -18,6 +18,7 @@ public class CheckoutServiceTests
 {
     private AppDbContext _dbContext = null!;
     private Mock<ICartService> _cartServiceMock = null!;
+    private Mock<IPaymentService> _paymentServiceMock = null!;
     private Mock<ILogger<CheckoutService>> _loggerMock = null!;
     private CheckoutService _checkoutService = null!;
 
@@ -31,8 +32,9 @@ public class CheckoutServiceTests
 
         _dbContext = new AppDbContext(options);
         _cartServiceMock = new Mock<ICartService>();
+        _paymentServiceMock = new Mock<IPaymentService>();
         _loggerMock = new Mock<ILogger<CheckoutService>>();
-        _checkoutService = new CheckoutService(_cartServiceMock.Object, _dbContext, _loggerMock.Object);
+        _checkoutService = new CheckoutService(_cartServiceMock.Object, _paymentServiceMock.Object, _dbContext, _loggerMock.Object);
 
         SeedTestData();
     }
@@ -123,7 +125,7 @@ public class CheckoutServiceTests
         // Assert
         Assert.That(result, Is.Not.Null);
         Assert.That(result.TotalPrice, Is.EqualTo(20.00m));
-        Assert.That(result.Status, Is.EqualTo(OrderStatus.PaymentPending.ToString()));
+        Assert.That(result.Status, Is.EqualTo(OrderStatus.Paid.ToString()));
         Assert.That(result.Items, Has.Count.EqualTo(1));
 
         // Verify order was saved
@@ -412,10 +414,10 @@ public class CheckoutServiceTests
         var result = await _checkoutService.ProcessCheckout(sessionId);
 
         // Assert
-        Assert.That(result.Status, Is.EqualTo(OrderStatus.PaymentPending.ToString()));
+        Assert.That(result.Status, Is.EqualTo(OrderStatus.Paid.ToString()));
 
         var savedOrder = await _dbContext.Orders.FirstOrDefaultAsync();
-        Assert.That(savedOrder!.Status, Is.EqualTo(OrderStatus.PaymentPending));
+        Assert.That(savedOrder!.Status, Is.EqualTo(OrderStatus.Paid));
     }
 
     #endregion

@@ -714,23 +714,34 @@ export const AdminPage: React.FC = () => {
 
                         {/* Status Update */}
                         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-3 border-t border-gray-200">
-                          <label className="text-sm font-medium text-gray-700">Update Status:</label>
-                          <div className="flex flex-wrap gap-2">
-                            {orderStatuses.map((status) => (
-                              <button
-                                key={status}
-                                onClick={() => handleUpdateOrderStatus(order.id, status)}
-                                disabled={order.status === status}
-                                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                                  order.status === status
-                                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                                    : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-[#0066CC] hover:text-[#0066CC]'
-                                }`}
-                              >
-                                {status}
-                              </button>
-                            ))}
-                          </div>
+                          {order.nextStatuses.length > 0 ? (
+                            <>
+                              <label className="text-sm font-medium text-gray-700">Actions:</label>
+                              <div className="flex flex-wrap gap-2">
+                                {order.nextStatuses.map((status) => (
+                                  <button
+                                    key={status}
+                                    onClick={() => handleUpdateOrderStatus(order.id, status)}
+                                    className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+                                      status === 'Cancelled'
+                                        ? 'bg-red-50 border border-red-300 text-red-700 hover:bg-red-100'
+                                        : 'bg-green-50 border border-green-300 text-green-700 hover:bg-green-100'
+                                    }`}
+                                  >
+                                    {status === 'Cancelled' ? 'Cancel' : status}
+                                  </button>
+                                ))}
+                              </div>
+                            </>
+                          ) : (
+                            <span className={`text-xs font-semibold ${
+                              order.status === 'Completed' ? 'text-green-600' :
+                              order.status === 'Cancelled' ? 'text-red-600' :
+                              'text-gray-500'
+                            }`}>
+                              {order.status}
+                            </span>
+                          )}
                         </div>
                       </div>
                     ))}

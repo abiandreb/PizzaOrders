@@ -1,5 +1,36 @@
+# Build output
 bin/
 obj/
 /packages/
+
+# IDE
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.sln.docstates
 riderModule.iml
 /_ReSharper.Caches/
+
+# Node
+node_modules/
+dist/
+
+# Test results
+coverage/
+TestResults/
+playwright-report/
+test-results/
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Claude / AI tooling
+.claude/
+.playwright-mcp/
+
+# Secrets
+appsettings.Development.json
+*.env

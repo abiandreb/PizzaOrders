@@ -142,6 +142,7 @@ export interface OrderAdminDto {
   createdAt: string;
   updatedAt?: string;
   items: OrderItemAdminDto[];
+  nextStatuses: string[];
 }
 
 export interface OrderItemAdminDto {
@@ -154,4 +155,31 @@ export interface OrderItemAdminDto {
 
 export interface UpdateOrderStatusRequest {
   status: string;
+}
+
+// User Order Types
+export interface OrderDetail {
+  orderId: number;
+  totalPrice: number;
+  orderDate: string;
+  updatedAt?: string;
+  status: string;
+  itemCount: number;
+  items: OrderDetailItem[];
+}
+
+export interface OrderDetailItem {
+  productId: number;
+  productName: string;
+  quantity: number;
+  unitPrice: number;
+  totalPrice: number;
+  size?: string;
+  modifiers: OrderItemModifier[];
+}
+
+export interface OrderItemModifier {
+  toppingId: number;
+  toppingName: string;
+  price: number;
 }

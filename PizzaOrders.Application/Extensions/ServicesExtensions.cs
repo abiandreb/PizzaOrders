@@ -39,6 +39,7 @@ public static class ServicesExtensions
         services.AddScoped<IProductManagementService, ProductManagementService>();
         services.AddScoped<IToppingManagementService, ToppingManagementService>();
         services.AddScoped<IOrderManagementService, OrderManagementService>();
+        services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IImageStorageService, AzuriteImageStorageService>();
 
         return services;
@@ -72,6 +73,21 @@ public static class ServicesExtensions
             options.SaveToken = true;
             options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = tokenValidationParameters;
+
+            // Allow SignalR to receive the JWT token from query string
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+                    if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs"))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
         return services;

@@ -10,6 +10,8 @@ import { CheckoutPage } from './pages/CheckoutPage/CheckoutPage';
 import { LoginPage } from './pages/LoginPage/LoginPage';
 import { RegisterPage } from './pages/RegisterPage/RegisterPage';
 import { AdminPage } from './pages/AdminPage/AdminPage';
+import { OrdersPage } from './pages/OrdersPage/OrdersPage';
+import { OrderTrackingPage } from './pages/OrderTrackingPage/OrderTrackingPage';
 
 function App() {
   return (
@@ -23,6 +25,22 @@ function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <OrdersPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders/:id"
+              element={
+                <ProtectedRoute>
+                  <OrderTrackingPage />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="/admin"
               element={

@@ -84,6 +84,9 @@ public abstract class IntegrationTestBase
         using var scope = Factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await dbContext.Database.MigrateAsync();
+
+        // Seed admin and regular user accounts for tests that need authentication
+        await SeedTestUsersAsync();
     }
 
     [OneTimeTearDown]
@@ -114,5 +117,47 @@ public abstract class IntegrationTestBase
         using var scope = Factory.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await action(dbContext);
+    }
+
+    private async Task SeedTestUsersAsync()
+    {
+        using var scope = Factory.Services.CreateScope();
+        var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<PizzaOrders.Domain.Entities.AuthEntities.UserEntity>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.RoleManager<PizzaOrders.Domain.Entities.AuthEntities.RoleEntity>>();
+
+        // Ensure roles exist
+        foreach (var role in new[] { PizzaOrders.Domain.UserRolesConstants.AdminRole, PizzaOrders.Domain.UserRolesConstants.UserRole })
+        {
+            if (!await roleManager.RoleExistsAsync(role))
+            {
+                await roleManager.CreateAsync(new PizzaOrders.Domain.Entities.AuthEntities.RoleEntity { Name = role });
+            }
+        }
+
+        // Create admin user
+        if (await userManager.FindByEmailAsync("admin@pizzaorders.com") == null)
+        {
+            var admin = new PizzaOrders.Domain.Entities.AuthEntities.UserEntity
+            {
+                UserName = "admin@pizzaorders.com",
+                Email = "admin@pizzaorders.com",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(admin, "Admin123!");
+            await userManager.AddToRoleAsync(admin, PizzaOrders.Domain.UserRolesConstants.AdminRole);
+        }
+
+        // Create regular user
+        if (await userManager.FindByEmailAsync("user@pizzaorders.com") == null)
+        {
+            var user = new PizzaOrders.Domain.Entities.AuthEntities.UserEntity
+            {
+                UserName = "user@pizzaorders.com",
+                Email = "user@pizzaorders.com",
+                EmailConfirmed = true
+            };
+            await userManager.CreateAsync(user, "User123!");
+            await userManager.AddToRoleAsync(user, PizzaOrders.Domain.UserRolesConstants.UserRole);
+        }
     }
 }

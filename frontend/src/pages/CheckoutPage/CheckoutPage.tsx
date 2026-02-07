@@ -36,7 +36,7 @@ export const CheckoutPage: React.FC = () => {
       toast.success(`Order placed successfully! Order #${order.orderId}`, {
         duration: 5000,
       });
-      navigate('/');
+      navigate(`/orders/${order.orderId}`);
     } catch (err: any) {
       const errorMsg = err.response?.data || 'Checkout failed. Please try again.';
       setError(errorMsg);

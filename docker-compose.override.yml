@@ -1,0 +1,17 @@
+# Development overrides
+# Use: docker-compose -f docker-compose.yml -f docker-compose.override.yml up
+
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      # Mount for hot reload during development (optional)
+      # - ./PizzaOrders.API:/src/PizzaOrders.API:ro
+    ports:
+      - "5062:8080"
